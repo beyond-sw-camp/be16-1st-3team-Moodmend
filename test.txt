@@ -3,3 +3,4 @@
 test 입니다 -- SJ
 squash test!
 squash test!2
+squash test!3
