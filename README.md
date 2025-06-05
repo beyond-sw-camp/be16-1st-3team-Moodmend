@@ -1,5 +1,5 @@
-# 🌈 be16-1st-3team-project_name_tba 🚀  
-> 16기 3팀 DB 프로젝트 - 프로젝트명 추후 공개 예정
+# 🌈 be16-1st-3team-TEAM-Moodmend 🚀
+> 16기 3팀 DB 프로젝트 - 팀 무드멘드
 
 ---
 
