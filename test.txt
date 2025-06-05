@@ -2,3 +2,4 @@
 테스트입니다2 *임성후*
 test 입니다 -- SJ
 squash test!
+squash test!2
