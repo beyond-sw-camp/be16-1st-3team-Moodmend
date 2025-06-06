@@ -91,4 +91,3 @@ ERD(Entity Relationship Diagram)를 설계하고,
 
 <p align="center"><strong>Moodmend · 감정 중심 명상 콘텐츠 플랫폼 DB 설계 프로젝트</strong></p>
 <p align="center"><em>본 문서는 Team Moodmend가 성실히 설계하고 제출한 결과물입니다.</em></p>
-<p align="center"><strong>감사합니다.<br/>Team Moodmend 배상</strong></p>
