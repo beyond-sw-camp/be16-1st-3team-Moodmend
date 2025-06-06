@@ -60,13 +60,14 @@ ERD(Entity Relationship Diagram)를 설계하는 데 중점을 두었습니다.
 
 ---
 
-## 🛠️ 기술 스택  
 
-<p align="center">
-  <img src="https://img.shields.io/badge/DB-diagram.io-blue" />
-  <img src="https://img.shields.io/badge/Docs-Markdown-lightgrey" />
-  <img src="https://img.shields.io/badge/Repo-GitHub-black" />
-</p>
+### 🔨 기술 스택
+
+[![MySQL](https://img.shields.io/badge/MYSQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
+[![Git](https://img.shields.io/badge/GIT-F05032?style=for-the-badge&logo=git&logoColor=white)](https://git-scm.com/)
+[![GitHub](https://img.shields.io/badge/GITHUB-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/)
+[![MariaDB](https://img.shields.io/badge/MARIADB-003545?style=for-the-badge&logo=mariadb&logoColor=white)](https://mariadb.org/)
+
 
 ---
 
