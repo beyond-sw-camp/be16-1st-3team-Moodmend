@@ -7,8 +7,8 @@
 Moodmend는 감정 상태에 따라 맞춤 명상 콘텐츠를 추천하고,  
 유저의 지속적인 참여를 유도하는 감정 기반 명상 플랫폼입니다.  
 이번 프로젝트는 Moodmend의 서비스 흐름을 바탕으로 실제 서비스 운영에 적합한  
-ERD(Entity Relationship Diagram)를 설계하고,
-실제 SQL 쿼리와 프로시저가 요구사항대로 정확하게 실행되는지 테스트하는데에 중점을 두었습니다.
+ERD(Entity Relationship Diagram)를 설계하고,  
+실제 SQL 쿼리와 프로시저가 요구사항대로 정확하게 실행되는지 테스트하는 데 중점을 두었습니다.
 
 ---
 
@@ -55,19 +55,20 @@ ERD(Entity Relationship Diagram)를 설계하고,
 ## 💡 기대 효과  
 
 - 감정 기반 콘텐츠 큐레이션으로 추천 정확도 향상  
-- 게임화 요소(출석, 포인트, 보상 등)로 지속적인 유저 참여 유도  
-- 실명 기반 커뮤니티로 사용자 간 신뢰 확보  
+- 게임화 요소(출석, 포인트, 보상, 게시판 등)로 지속적인 유저 참여 유도  
 - 명상 콘텐츠의 소비와 확산을 위한 기반 마련  
 
 ---
 
-
-### 🔨 기술 스택
+## 🔨 기술 스택
 
 [![MySQL](https://img.shields.io/badge/MYSQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![Git](https://img.shields.io/badge/GIT-F05032?style=for-the-badge&logo=git&logoColor=white)](https://git-scm.com/)
-[![GitHub](https://img.shields.io/badge/GITHUB-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/)
+
 [![MariaDB](https://img.shields.io/badge/MARIADB-003545?style=for-the-badge&logo=mariadb&logoColor=white)](https://mariadb.org/)
+
+[![Git](https://img.shields.io/badge/GIT-F05032?style=for-the-badge&logo=git&logoColor=white)](https://git-scm.com/)
+
+[![GitHub](https://img.shields.io/badge/GITHUB-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/)
 
 ---
 
@@ -93,4 +94,4 @@ ERD(Entity Relationship Diagram)를 설계하고,
 
 <p align="center"><strong>Moodmend · 감정 중심 명상 콘텐츠 플랫폼 DB 설계 프로젝트</strong></p>
 <p align="center"><em>본 문서는 Team Moodmend가 성실히 설계하고 제출한 결과물입니다.</em></p>
-<p align="center"><strong>감사합니다.
+<p align="center"><strong>감사합니다.<br/>Team Moodmend 배상</strong></p>
