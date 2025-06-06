@@ -7,7 +7,8 @@
 Moodmend는 감정 상태에 따라 맞춤 명상 콘텐츠를 추천하고,  
 유저의 지속적인 참여를 유도하는 감정 기반 명상 플랫폼입니다.  
 이번 프로젝트는 Moodmend의 서비스 흐름을 바탕으로 실제 서비스 운영에 적합한  
-ERD(Entity Relationship Diagram)를 설계하는 데 중점을 두었습니다.
+ERD(Entity Relationship Diagram)를 설계하고,
+실제 SQL 쿼리와 프로시저가 요구사항대로 정확하게 실행되는지 테스트하는데에 중점을 두었습니다.
 
 ---
 
@@ -68,15 +69,6 @@ ERD(Entity Relationship Diagram)를 설계하는 데 중점을 두었습니다.
 [![GitHub](https://img.shields.io/badge/GITHUB-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/)
 [![MariaDB](https://img.shields.io/badge/MARIADB-003545?style=for-the-badge&logo=mariadb&logoColor=white)](https://mariadb.org/)
 
-
----
-
-## 📎 참고 사항  
-
-- 커뮤니티, 가상 상점, 실명 채팅 기능은 향후 확장 가능하도록 설계  
-- 추천 알고리즘 및 사용자 감정 로그를 위한 테이블 추가 예정  
-- 실제 서비스 배포를 위한 DB 성능 최적화는 별도 진행 예정  
-
 ---
 
 ## 👥 팀원 및 역할 분장  
@@ -101,5 +93,4 @@ ERD(Entity Relationship Diagram)를 설계하는 데 중점을 두었습니다.
 
 <p align="center"><strong>Moodmend · 감정 중심 명상 콘텐츠 플랫폼 DB 설계 프로젝트</strong></p>
 <p align="center"><em>본 문서는 Team Moodmend가 성실히 설계하고 제출한 결과물입니다.</em></p>
-<p align="center"><strong>감사합니다.  
-<br/>Team Moodmend 배상</strong></p>
+<p align="center"><strong>감사합니다.
