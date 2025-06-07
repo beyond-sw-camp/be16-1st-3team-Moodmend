@@ -1,6 +1,12 @@
 # 🧘‍♀️ Moodmend ERD 설계 프로젝트  
 감정 기반 명상 콘텐츠 추천 플랫폼 **Moodmend**의 데이터베이스 모델링 프로젝트입니다.
 
+&nbsp;
+<p align="center">
+  <img src="./images/logo/moodmend_logo.png" width="200" alt="Moodmend Logo"/>
+</p>
+&nbsp;
+
 ---
 
 ## 📌 프로젝트 개요  
