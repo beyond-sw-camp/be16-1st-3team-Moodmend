@@ -1,6 +1,6 @@
 DELIMITER $$
 
-CREATE PROCEDURE 01_플레이리스트_기능 (
+CREATE PROCEDURE 지현_01_플레이리스트_기능 (
     IN p_action VARCHAR(20),
     IN p_members_id BIGINT,
     IN p_playlist_id BIGINT,
@@ -60,7 +60,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE 02_포인트_이력_조회_jh (
+CREATE PROCEDURE 지현_02_포인트_이력_조회 (
     IN p_members_id BIGINT
 )
 BEGIN
@@ -78,7 +78,25 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE 04_재화_변경_관리자 (
+CREATE PROCEDURE 지현_03_재화이력조회관리자 ()
+BEGIN
+    SELECT 
+        m.members_id,
+        m.nickname,
+        m.point,
+        pr.point_reward,
+        pr.reward_date,
+        pr.reason
+    FROM members m
+    LEFT JOIN point_reward pr ON m.members_id = pr.members_id
+    ORDER BY m.members_id, pr.reward_date DESC;
+END $$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE 지현_04_재화_변경_관리자 (
     IN p_members_id BIGINT,
     IN p_point_change INT,
     IN p_reason VARCHAR(50)
@@ -96,7 +114,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE 05_감정_다이어리_기록 (
+CREATE PROCEDURE 지현_05_감정_다이어리_기록 (
     IN p_members_id BIGINT,
     IN p_emotion_id BIGINT,
     IN p_intensity TINYINT,
@@ -135,7 +153,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE 06_감정_기반_콘텐츠_추천 (
+CREATE PROCEDURE 지현_06_감정_기반_콘텐츠_추천 (
     IN p_members_id BIGINT
 )
 BEGIN
@@ -164,7 +182,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE 07_출석_기록 (
+CREATE PROCEDURE 지현_07_출석_기록 (
     IN p_members_id BIGINT
 )
 BEGIN
@@ -184,7 +202,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE PROCEDURE 08_출석_조회 (
+CREATE PROCEDURE 지현_08_출석_조회 (
     IN p_members_id BIGINT
 )
 BEGIN
