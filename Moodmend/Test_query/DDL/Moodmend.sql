@@ -117,24 +117,6 @@ CREATE TABLE download (
   FOREIGN KEY (members_id) REFERENCES members(members_id)
 );
 
-CREATE TABLE owned (
-  owned_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  members_id BIGINT NOT NULL,
-  items_id BIGINT,
-  contents_id BIGINT,
-  payment_detail_id BIGINT NOT NULL,
-  acquired_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  source_type ENUM('결제', '보상') NOT NULL DEFAULT '결제',
-  is_equipped BOOLEAN NOT NULL DEFAULT FALSE,
-  FOREIGN KEY (members_id) REFERENCES members(members_id),
-  FOREIGN KEY (items_id) REFERENCES items(items_id),
-  FOREIGN KEY (contents_id) REFERENCES contents(contents_id),
-  FOREIGN KEY (payment_detail_id) REFERENCES payment_detail(payment_detail_id),
-  CONSTRAINT uc_owned_item UNIQUE (members_id, items_id),
-  CONSTRAINT uc_owned_contents UNIQUE (members_id, contents_id),
-  CHECK ((items_id IS NOT NULL AND contents_id IS NULL) OR (items_id IS NULL AND contents_id IS NOT NULL))
-);
-
 CREATE TABLE meditation_class (
   meditation_class_id BIGINT NOT NULL AUTO_INCREMENT,
   members_id BIGINT NOT NULL,
@@ -179,8 +161,7 @@ CREATE TABLE cart (
   PRIMARY KEY (cart_id),
   FOREIGN KEY (contents_id) REFERENCES contents(contents_id),
   FOREIGN KEY (members_id) REFERENCES members(members_id),
-  FOREIGN KEY (items_id) REFERENCES items(items_id),
-  CHECK ((contents_id IS NOT NULL AND items_id IS NULL) OR (contents_id IS NULL AND items_id IS NOT NULL))
+  FOREIGN KEY (items_id) REFERENCES items(items_id)
 );
 
 CREATE TABLE payment (
@@ -208,6 +189,23 @@ CREATE TABLE payment_detail (
   FOREIGN KEY (contents_id) REFERENCES contents(contents_id),
   FOREIGN KEY (payment_id) REFERENCES payment(payment_id),
   FOREIGN KEY (items_id) REFERENCES items(items_id)
+);
+
+CREATE TABLE owned (
+  owned_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  members_id BIGINT NOT NULL,
+  items_id BIGINT,
+  contents_id BIGINT,
+  payment_detail_id BIGINT NOT NULL,
+  acquired_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  source_type ENUM('결제', '보상') NOT NULL DEFAULT '결제',
+  is_equipped BOOLEAN NOT NULL DEFAULT FALSE,
+  FOREIGN KEY (members_id) REFERENCES members(members_id),
+  FOREIGN KEY (items_id) REFERENCES items(items_id),
+  FOREIGN KEY (contents_id) REFERENCES contents(contents_id),
+  FOREIGN KEY (payment_detail_id) REFERENCES payment_detail(payment_detail_id),
+  CONSTRAINT uc_owned_item UNIQUE (members_id, items_id),
+  CONSTRAINT uc_owned_contents UNIQUE (members_id, contents_id)
 );
 
 CREATE TABLE post (
