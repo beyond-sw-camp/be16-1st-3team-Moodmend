@@ -4,7 +4,6 @@
 &nbsp;
 <p align="center">
   <img src=".Moodmend/images/logo/moodmend_logo.png" width="1000" alt="Moodmend Logo"/>
-</p>
 &nbsp;
 
 ---
@@ -15,6 +14,11 @@ Moodmend는 감정 상태에 따라 맞춤 명상 콘텐츠를 추천하고,
 이번 프로젝트는 Moodmend의 서비스 흐름을 바탕으로 실제 서비스 운영에 적합한  
 ERD(Entity Relationship Diagram)를 설계하고, 실제 SQL 쿼리와 프로시저가 
 요구사항대로 정확하게 실행되는지 테스트하는 데 중점을 두었습니다.
+
+---
+
+## 📅 프로젝트 기간  
+**2025.06.05 ~ 2025.06.09**
 
 ---
 
@@ -45,8 +49,8 @@ ERD(Entity Relationship Diagram)를 설계하고, 실제 SQL 쿼리와 프로시
 ## 📎 프로젝트 주요 산출물  
 각 항목은 클릭 또는 다운로드 링크로 연결됩니다.
 
-- ✅ [요구사항 정의서](#) *(예: Notion, Google Docs 등 링크 삽입)*  
-- ✅ [WBS (Work Breakdown Structure)](#)  
+- ✅ [요구사항 정의서](https://docs.google.com/spreadsheets/d/1lFGjxB9mXCP0s3Rz3rKsKB5AYQrcu9vMIBpgAjZERnI/edit?gid=1298947418#gid=1298947418)  
+- ✅ [WBS (Work Breakdown Structure)](https://docs.google.com/spreadsheets/d/1lFGjxB9mXCP0s3Rz3rKsKB5AYQrcu9vMIBpgAjZERnI/edit?gid=0#gid=0)  
 - ✅ [ERD 설계 이미지 보기](#)  
 - ✅ [테스트용 DML 쿼리 파일 다운로드](#)
 
