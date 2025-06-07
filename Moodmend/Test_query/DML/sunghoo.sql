@@ -173,7 +173,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `05_좋아요_등록`(
+CREATE DEFINER=`root`@`%` PROCEDURE `성후_05_좋아요_등록`(
     IN p_members_id BIGINT,
     IN p_contents_id BIGINT
 )
@@ -194,7 +194,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `06_좋아요_취소`(
+CREATE DEFINER=`root`@`%` PROCEDURE `성후_06_좋아요_취소`(
     IN p_members_id BIGINT,
     IN p_contents_id BIGINT
 )
@@ -215,7 +215,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `07_콘텐츠_정렬조회`(
+CREATE DEFINER=`root`@`%` PROCEDURE `성후_07_콘텐츠_정렬조회`(
     IN p_sort_column VARCHAR(20),   -- 'views' 또는 'likes'
     IN p_sort_order VARCHAR(4)      -- 'ASC' 또는 'DESC'
 )
@@ -253,7 +253,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `08_콘텐츠_조회_다운로드`(
+CREATE DEFINER=`root`@`%` PROCEDURE `성후_08_콘텐츠_조회_다운로드`(
     IN p_members_id BIGINT,
     IN p_contents_id BIGINT
 )
@@ -283,7 +283,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `09_카테고리별_콘텐츠_조회`(
+CREATE DEFINER=`root`@`%` PROCEDURE `성후_09_카테고리별_콘텐츠_조회`(
     IN p_category VARCHAR(20)
 )
 BEGIN
@@ -308,7 +308,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `10_보유_콘텐츠_아이템_조회`(
+CREATE DEFINER=`root`@`%` PROCEDURE `성후_10_보유_콘텐츠_아이템_조회`(
     IN p_members_id BIGINT
 )
 BEGIN

@@ -1,239 +1,323 @@
 DELIMITER $$
 
-CREATE PROCEDURE 승지_01_회원관리_회원가입 (
-  IN p_name VARCHAR(20),
-  IN p_password VARCHAR(255),
-  IN p_phone_number VARCHAR(20),
-  IN p_nickname VARCHAR(20),
-  IN p_birthday DATE,
-  IN p_email VARCHAR(50),
-  IN p_role ENUM('Admin', 'Teacher', 'User'),
-  IN p_signup_type ENUM('Email', 'Kakao', 'Google', 'Naver')
+CREATE PROCEDURE 성후_01_콘텐츠_등록(
+    IN p_members_id BIGINT,
+    IN p_emotion_id BIGINT,
+    IN p_name VARCHAR(100),
+    IN p_description TEXT,
+    IN p_thumbnail TEXT,
+    IN p_duration INT,
+    IN p_is_premium ENUM('일반', '프리미엄'),
+    IN p_video_url TEXT,
+    IN p_price INT UNSIGNED
 )
 BEGIN
-  IF EXISTS (
-    SELECT 1 FROM members 
-    WHERE phone_number = p_phone_number OR email = p_email
-  ) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = '이미 등록된 이메일 또는 전화번호입니다.';
-  ELSE
-    INSERT INTO members (
-      name, password, phone_number, nickname, birthday, email,
-      role, signup_type, created_at, updated_at, point
-    )
-    VALUES (
-      p_name, p_password, p_phone_number, p_nickname, p_birthday, p_email,
-      p_role, p_signup_type, NOW(), NOW(), 0
+    IF p_is_premium = '프리미엄' AND p_price = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '프리미엄 콘텐츠는 가격이 0원이 될 수 없습니다.';
+    END IF;
+
+    IF p_is_premium = '일반' AND p_price != 0 THEN
+        SET p_price = 0;
+    END IF;
+
+    INSERT INTO contents (
+        members_id,
+        emotion_id,
+        name,
+        description,
+        thumbnail,
+        duration,
+        is_premium,
+        views,
+        price,
+        video_url
+    ) VALUES (
+        p_members_id,
+        p_emotion_id,
+        p_name,
+        p_description,
+        p_thumbnail,
+        p_duration,
+        p_is_premium,
+        0,
+        p_price,
+        p_video_url
     );
-  END IF;
-END$$
-
-DELIMITER ;
-
+END $$
 
 DELIMITER $$
 
-CREATE PROCEDURE 승지_02_회원관리_로그인 (
-  IN p_login_id VARCHAR(50), -- 이메일 또는 전화번호
-  IN p_password VARCHAR(255)
+CREATE PROCEDURE 성후_02_콘텐츠_수정(
+    IN p_members_id BIGINT,
+    IN p_contents_id BIGINT,
+    IN p_name VARCHAR(100),
+    IN p_description TEXT,
+    IN p_thumbnail TEXT,
+    IN p_duration INT,
+    IN p_is_premium ENUM('일반', '프리미엄'),
+    IN p_video_url TEXT,
+    IN p_price INT UNSIGNED
 )
 BEGIN
-  IF EXISTS (
-    SELECT 1 FROM members 
-    WHERE (email = p_login_id OR phone_number = p_login_id)
-      AND password = p_password
-  ) THEN
-    SELECT members_id, name, nickname FROM members 
-    WHERE (email = p_login_id OR phone_number = p_login_id)
-      AND password = p_password;
-  ELSE
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = '로그인 정보가 일치하지 않습니다.';
-  END IF;
-END$$
+    IF NOT EXISTS (
+        SELECT 1 FROM contents
+        WHERE contents_id = p_contents_id AND members_id = p_members_id
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '해당 콘텐츠에 대한 수정 권한이 없습니다.';
+    END IF;
 
-DELIMITER ;
+    IF p_is_premium = '프리미엄' AND p_price = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '프리미엄 콘텐츠는 가격이 0원이 될 수 없습니다.';
+    END IF;
 
+    IF p_is_premium = '일반' THEN
+        SET p_price = 0;
+    END IF;
+
+    UPDATE contents
+    SET
+        name = p_name,
+        description = p_description,
+        thumbnail = p_thumbnail,
+        duration = p_duration,
+        is_premium = p_is_premium,
+        price = p_price,
+        video_url = p_video_url,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE contents_id = p_contents_id AND members_id = p_members_id;
+END $$
 
 DELIMITER $$
 
-CREATE PROCEDURE 승지_03_회원관리_로그아웃 (
-  IN p_members_id BIGINT
+CREATE PROCEDURE 성후_03_콘텐츠_삭제(
+    IN p_members_id BIGINT,
+    IN p_contents_id BIGINT
 )
 BEGIN
-  INSERT INTO logout_log (members_id) VALUES (p_members_id);
-END$$
+    DECLARE v_role ENUM('Admin', 'Teacher', 'User');
 
-DELIMITER ;
+    SELECT role INTO v_role
+    FROM members
+    WHERE members_id = p_members_id;
 
+    IF v_role IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '존재하지 않는 사용자입니다.';
+    END IF;
+
+    IF v_role != 'Admin' AND NOT EXISTS (
+        SELECT 1 FROM contents 
+        WHERE contents_id = p_contents_id AND members_id = p_members_id
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '해당 콘텐츠에 대한 삭제 권한이 없습니다.';
+    END IF;
+
+    DELETE FROM contents 
+    WHERE contents_id = p_contents_id;
+END $$
 
 DELIMITER $$
 
-CREATE PROCEDURE 승지_04_회원관리_친구추가 (
-  IN p_requester_id BIGINT,
-  IN p_receiver_id BIGINT
+CREATE PROCEDURE 성후_04_콘텐츠_조회(
+    IN p_contents_id BIGINT
 )
 BEGIN
-  IF p_requester_id = p_receiver_id THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = '자기 자신을 친구로 추가할 수 없습니다.';
-  ELSEIF EXISTS (
-    SELECT 1 FROM friend 
-    WHERE requester_id = p_requester_id AND receiver_id = p_receiver_id
-  ) THEN
-    SIGNAL SQLSTATE '45000'
-    SET MESSAGE_TEXT = '이미 친구 요청을 보냈거나 친구입니다.';
-  ELSE
-    INSERT INTO friend (requester_id, receiver_id, status)
-    VALUES (p_requester_id, p_receiver_id, 'friend');
-  END IF;
-END$$
-
-DELIMITER ;
-
+    IF p_contents_id IS NULL THEN
+        SELECT 
+            c.contents_id,
+            c.name AS title,
+            c.description,
+            c.thumbnail,
+            c.duration,
+            c.is_premium,
+            c.price,
+            c.views,
+            c.upload_at,
+            m.nickname AS creator_nickname,
+            e.emotion_name
+        FROM contents c
+        JOIN members m ON c.members_id = m.members_id
+        JOIN emotion e ON c.emotion_id = e.emotion_id
+        ORDER BY c.upload_at DESC;
+    ELSE
+        SELECT 
+            c.contents_id,
+            c.name AS title,
+            c.description,
+            c.thumbnail,
+            c.duration,
+            c.is_premium,
+            c.price,
+            c.views,
+            c.upload_at,
+            m.nickname AS creator_nickname,
+            e.emotion_name
+        FROM contents c
+        JOIN members m ON c.members_id = m.members_id
+        JOIN emotion e ON c.emotion_id = e.emotion_id
+        WHERE c.contents_id = p_contents_id;
+    END IF;
+END $$
 
 DELIMITER $$
 
-CREATE PROCEDURE 승지_05_회원관리_친구삭제 (
-  IN p_requester_id BIGINT,
-  IN p_receiver_id BIGINT
+CREATE PROCEDURE 성후_05_좋아요_등록(
+    IN p_members_id BIGINT,
+    IN p_contents_id BIGINT
 )
 BEGIN
-  DELETE FROM friend 
-  WHERE requester_id = p_requester_id AND receiver_id = p_receiver_id;
-END$$
+    IF EXISTS (
+        SELECT 1 FROM likes
+        WHERE members_id = p_members_id AND contents_id = p_contents_id
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '이미 좋아요를 눌렀습니다.';
+    END IF;
 
-DELIMITER ;
+    INSERT INTO likes (members_id, contents_id)
+    VALUES (p_members_id, p_contents_id);
+END $$
 
+DELIMITER $$
 
-DELIMITER //
-CREATE PROCEDURE 승지_06_게시판_등록 (
-  IN p_members_id BIGINT,
-  IN p_avatar_id BIGINT,
-  IN p_title VARCHAR(50),
-  IN p_text TEXT,
-  IN p_category ENUM('고민','질문','좋은글','자유'),
-  IN p_is_anonymous BOOLEAN
+CREATE PROCEDURE 성후_06_좋아요_취소(
+    IN p_members_id BIGINT,
+    IN p_contents_id BIGINT
 )
 BEGIN
-  INSERT INTO post (members_id, avatar_id, title, text, category, is_anonymous, created_at, updated_at)
-  VALUES (p_members_id, p_avatar_id, p_title, p_text, p_category, p_is_anonymous, NOW(), NOW());
-END;
-//
-DELIMITER ;
+    IF NOT EXISTS (
+        SELECT 1 FROM likes
+        WHERE members_id = p_members_id AND contents_id = p_contents_id
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '좋아요를 누른 적이 없습니다.';
+    END IF;
 
+    DELETE FROM likes
+    WHERE members_id = p_members_id AND contents_id = p_contents_id;
+END $$
 
-DELIMITER //
-CREATE PROCEDURE 승지_07_게시판_카테고리별조회 (
-  IN p_category ENUM('고민','질문','좋은글','자유')
+DELIMITER $$
+
+CREATE PROCEDURE 성후_07_콘텐츠_정렬조회(
+    IN p_sort_column VARCHAR(20),
+    IN p_sort_order VARCHAR(4)
 )
 BEGIN
-  SELECT * FROM post
-  WHERE category = p_category;
-END;
-//
-DELIMITER ;
+    DECLARE v_order_column VARCHAR(30);
 
+    IF p_sort_column = 'likes' THEN
+        SET v_order_column = 'like_count';
+    ELSE
+        SET v_order_column = 'c.views';
+    END IF;
 
-DELIMITER //
-CREATE PROCEDURE 승지_08_게시판_조회 (
-  IN p_post_id BIGINT
+    SET @sql = CONCAT(
+        'SELECT ',
+            'c.contents_id, c.name AS title, c.description, c.thumbnail, ',
+            'c.duration, c.is_premium, c.price, c.views, c.upload_at, ',
+            'm.nickname AS creator_nickname, ',
+            'e.emotion_name, ',
+            'COUNT(l.members_id) AS like_count ',
+        'FROM contents c ',
+        'JOIN members m ON c.members_id = m.members_id ',
+        'JOIN emotion e ON c.emotion_id = e.emotion_id ',
+        'LEFT JOIN likes l ON c.contents_id = l.contents_id ',
+        'GROUP BY c.contents_id ',
+        'ORDER BY ', v_order_column, ' ', p_sort_order
+    );
+
+    PREPARE stmt FROM @sql;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END $$
+
+DELIMITER $$
+
+CREATE PROCEDURE 성후_08_콘텐츠_조회_다운로드(
+    IN p_members_id BIGINT,
+    IN p_contents_id BIGINT
 )
 BEGIN
-  SELECT * FROM post
-  WHERE post_id = p_post_id;
-END;
-//
-DELIMITER ;
+    DECLARE v_views BIGINT;
+    DECLARE v_likes BIGINT;
 
+    SELECT views INTO v_views
+    FROM contents
+    WHERE contents_id = p_contents_id;
 
-DELIMITER //
-CREATE PROCEDURE 승지_09_게시판_수정 (
-  IN p_post_id BIGINT,
-  IN p_members_id BIGINT,
-  IN p_title VARCHAR(50),
-  IN p_text TEXT,
-  IN p_category ENUM('고민','질문','좋은글','자유'),
-  IN p_is_anonymous BOOLEAN
+    SELECT COUNT(*) INTO v_likes
+    FROM likes
+    WHERE contents_id = p_contents_id;
+
+    INSERT INTO download (members_id, contents_id)
+    VALUES (p_members_id, p_contents_id);
+
+    SELECT 
+        p_contents_id AS contents_id,
+        v_views AS current_views,
+        v_likes AS current_likes,
+        '다운로드 완료' AS download_status;
+END $$
+
+DELIMITER $$
+
+CREATE PROCEDURE 성후_09_카테고리별_콘텐츠_조회(
+    IN p_category VARCHAR(20)
 )
 BEGIN
-  UPDATE post
-  SET title = p_title,
-      text = p_text,
-      category = p_category,
-      is_anonymous = p_is_anonymous,
-      updated_at = NOW()
-  WHERE post_id = p_post_id AND members_id = p_members_id;
-END;
-//
-DELIMITER ;
+    SELECT 
+        c.contents_id,
+        c.name,
+        c.description,
+        c.thumbnail,
+        c.duration,
+        c.price,
+        c.is_premium,
+        c.upload_at,
+        e.emotion_name,
+        m.nickname AS creator
+    FROM contents c
+    JOIN emotion e ON c.emotion_id = e.emotion_id
+    JOIN members m ON c.members_id = m.members_id
+    WHERE e.emotion_name = p_category;
+END $$
 
+DELIMITER $$
 
-DELIMITER //
-CREATE PROCEDURE 승지_10_게시판_삭제 (
-  IN p_post_id BIGINT,
-  IN p_members_id BIGINT
+CREATE PROCEDURE 성후_10_보유_콘텐츠_아이템_조회(
+    IN p_members_id BIGINT
 )
 BEGIN
-  DELETE FROM post
-  WHERE post_id = p_post_id AND members_id = p_members_id;
-END;
-//
-DELIMITER ;
+    SELECT 
+        o.owned_id,
+        o.contents_id,
+        c.name AS contents_name,
+        NULL AS items_name,
+        o.acquired_at,
+        o.source_type,
+        o.is_equipped
+    FROM owned o
+    JOIN contents c ON o.contents_id = c.contents_id
+    WHERE o.members_id = p_members_id AND o.contents_id IS NOT NULL
 
+    UNION ALL
 
-DELIMITER //
-CREATE PROCEDURE 승지_11_게시판_관리자삭제 (
-  IN p_post_id BIGINT
-)
-BEGIN
-  DELETE FROM post
-  WHERE post_id = p_post_id;
-END;
-//
-DELIMITER ;
+    SELECT 
+        o.owned_id,
+        NULL,
+        NULL,
+        i.items_name,
+        o.acquired_at,
+        o.source_type,
+        o.is_equipped
+    FROM owned o
+    JOIN items i ON o.items_id = i.items_id
+    WHERE o.members_id = p_members_id AND o.items_id IS NOT NULL;
+END $$
 
-
-DELIMITER //
-CREATE PROCEDURE 승지_12_게시판_조회수별조회 ()
-BEGIN
-  SELECT * FROM post
-  ORDER BY views DESC;
-END;
-//
-DELIMITER ;
-
-
-DELIMITER //
-CREATE PROCEDURE 승지_13_게시판_좋아요수별조회 ()
-BEGIN
-  SELECT * FROM post
-  ORDER BY likes DESC;
-END;
-//
-DELIMITER ;
-
-
-DELIMITER //
-CREATE PROCEDURE 승지_14_게시판_특정조회수확인 (
-  IN p_post_id BIGINT
-)
-BEGIN
-  SELECT views FROM post
-  WHERE post_id = p_post_id;
-END;
-//
-DELIMITER ;
-
-
-DELIMITER //
-CREATE PROCEDURE 승지_15_게시판_좋아요수별조회 (
-  IN p_post_id BIGINT
-)
-BEGIN
-  SELECT likes FROM post
-  WHERE post_id = p_post_id;
-END;
-//
 DELIMITER ;
