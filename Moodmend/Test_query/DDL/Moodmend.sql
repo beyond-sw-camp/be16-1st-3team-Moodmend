@@ -117,6 +117,33 @@ CREATE TABLE download (
   FOREIGN KEY (members_id) REFERENCES members(members_id)
 );
 
+CREATE TABLE payment (
+  payment_id BIGINT NOT NULL AUTO_INCREMENT,
+  members_id BIGINT NOT NULL,
+  items_id BIGINT NOT NULL,
+  payment_method ENUM('신용카드','카카오페이','삼성페이','아이템') NOT NULL,
+  payment_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  refund_date DATETIME,
+  refund_require BOOLEAN DEFAULT FALSE,
+  total_price INT UNSIGNED NOT NULL,
+  PRIMARY KEY (payment_id),
+  FOREIGN KEY (members_id) REFERENCES members(members_id),
+  FOREIGN KEY (items_id) REFERENCES items(items_id)
+);
+
+CREATE TABLE payment_detail (
+  payment_detail_id BIGINT NOT NULL AUTO_INCREMENT,
+  contents_id BIGINT,
+  payment_id BIGINT NOT NULL,
+  items_id BIGINT,
+  purchase_type ENUM('콘텐츠 구매','아이템 구매') NOT NULL,
+  price INT UNSIGNED NOT NULL,
+  PRIMARY KEY (payment_detail_id),
+  FOREIGN KEY (contents_id) REFERENCES contents(contents_id),
+  FOREIGN KEY (payment_id) REFERENCES payment(payment_id),
+  FOREIGN KEY (items_id) REFERENCES items(items_id)
+);
+
 CREATE TABLE owned (
   owned_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   members_id BIGINT NOT NULL,
@@ -183,33 +210,6 @@ CREATE TABLE cart (
   CHECK ((contents_id IS NOT NULL AND items_id IS NULL) OR (contents_id IS NULL AND items_id IS NOT NULL))
 );
 
-CREATE TABLE payment (
-  payment_id BIGINT NOT NULL AUTO_INCREMENT,
-  members_id BIGINT NOT NULL,
-  items_id BIGINT NOT NULL,
-  payment_method ENUM('신용카드','카카오페이','삼성페이','아이템') NOT NULL,
-  payment_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  refund_date DATETIME,
-  refund_require BOOLEAN DEFAULT FALSE,
-  total_price INT UNSIGNED NOT NULL,
-  PRIMARY KEY (payment_id),
-  FOREIGN KEY (members_id) REFERENCES members(members_id),
-  FOREIGN KEY (items_id) REFERENCES items(items_id)
-);
-
-CREATE TABLE payment_detail (
-  payment_detail_id BIGINT NOT NULL AUTO_INCREMENT,
-  contents_id BIGINT,
-  payment_id BIGINT NOT NULL,
-  items_id BIGINT,
-  purchase_type ENUM('콘텐츠 구매','아이템 구매') NOT NULL,
-  price INT UNSIGNED NOT NULL,
-  PRIMARY KEY (payment_detail_id),
-  FOREIGN KEY (contents_id) REFERENCES contents(contents_id),
-  FOREIGN KEY (payment_id) REFERENCES payment(payment_id),
-  FOREIGN KEY (items_id) REFERENCES items(items_id)
-);
-
 CREATE TABLE post (
   post_id BIGINT NOT NULL AUTO_INCREMENT,
   members_id BIGINT NOT NULL,
@@ -259,7 +259,7 @@ CREATE TABLE point_reward (
   members_id BIGINT NOT NULL,
   point_reward BIGINT NOT NULL DEFAULT 0,
   reward_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  reason TEXT NOT NULL,
+  reason VARCHAR(50) NOT NULL,
   FOREIGN KEY (members_id) REFERENCES members(members_id),
   UNIQUE KEY unique_members_reward_date (members_id, reward_date)
 );
