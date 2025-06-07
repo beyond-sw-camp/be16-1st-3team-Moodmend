@@ -1,4 +1,4 @@
-DELIMITER $$Add commentMore actions
+DELIMITER $$
 
 CREATE PROCEDURE 승지_01_회원관리_회원가입 (
   IN p_name VARCHAR(20),
@@ -233,7 +233,7 @@ CREATE PROCEDURE 승지_15_게시판_좋아요수별조회 (
 )
 BEGIN
   SELECT likes FROM post
-  WHERE post_id = p_post_id;Add commentMore actions
+  WHERE post_id = p_post_id;
 END;
 //
 DELIMITER ;
