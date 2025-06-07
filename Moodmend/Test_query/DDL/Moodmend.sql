@@ -117,7 +117,6 @@ CREATE TABLE download (
   FOREIGN KEY (members_id) REFERENCES members(members_id)
 );
 
-<<<<<<< HEAD
 CREATE TABLE payment (
   payment_id BIGINT NOT NULL AUTO_INCREMENT,
   members_id BIGINT NOT NULL,
@@ -163,8 +162,6 @@ CREATE TABLE owned (
   CHECK ((items_id IS NOT NULL AND contents_id IS NULL) OR (items_id IS NULL AND contents_id IS NOT NULL))
 );
 
-=======
->>>>>>> 0fc14a10c78a25cbace7667b3e38f623b5c6f768
 CREATE TABLE meditation_class (
   meditation_class_id BIGINT NOT NULL AUTO_INCREMENT,
   members_id BIGINT NOT NULL,
@@ -209,56 +206,10 @@ CREATE TABLE cart (
   PRIMARY KEY (cart_id),
   FOREIGN KEY (contents_id) REFERENCES contents(contents_id),
   FOREIGN KEY (members_id) REFERENCES members(members_id),
-  FOREIGN KEY (items_id) REFERENCES items(items_id)
-);
-
-<<<<<<< HEAD
-=======
-CREATE TABLE payment (
-  payment_id BIGINT NOT NULL AUTO_INCREMENT,
-  members_id BIGINT NOT NULL,
-  items_id BIGINT NOT NULL,
-  payment_method ENUM('신용카드','카카오페이','삼성페이','아이템') NOT NULL,
-  payment_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  refund_date DATETIME,
-  refund_require BOOLEAN DEFAULT FALSE,
-  total_price INT UNSIGNED NOT NULL,
-  PRIMARY KEY (payment_id),
-  FOREIGN KEY (members_id) REFERENCES members(members_id),
-  FOREIGN KEY (items_id) REFERENCES items(items_id)
-);
-
-CREATE TABLE payment_detail (
-  payment_detail_id BIGINT NOT NULL AUTO_INCREMENT,
-  contents_id BIGINT,
-  payment_id BIGINT NOT NULL,
-  items_id BIGINT,
-  purchase_type ENUM('콘텐츠 구매','아이템 구매') NOT NULL,
-  price INT UNSIGNED NOT NULL,
-  PRIMARY KEY (payment_detail_id),
-  FOREIGN KEY (contents_id) REFERENCES contents(contents_id),
-  FOREIGN KEY (payment_id) REFERENCES payment(payment_id),
-  FOREIGN KEY (items_id) REFERENCES items(items_id)
-);
-
-CREATE TABLE owned (
-  owned_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  members_id BIGINT NOT NULL,
-  items_id BIGINT,
-  contents_id BIGINT,
-  payment_detail_id BIGINT NOT NULL,
-  acquired_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  source_type ENUM('결제', '보상') NOT NULL DEFAULT '결제',
-  is_equipped BOOLEAN NOT NULL DEFAULT FALSE,
-  FOREIGN KEY (members_id) REFERENCES members(members_id),
   FOREIGN KEY (items_id) REFERENCES items(items_id),
-  FOREIGN KEY (contents_id) REFERENCES contents(contents_id),
-  FOREIGN KEY (payment_detail_id) REFERENCES payment_detail(payment_detail_id),
-  CONSTRAINT uc_owned_item UNIQUE (members_id, items_id),
-  CONSTRAINT uc_owned_contents UNIQUE (members_id, contents_id)
+  CHECK ((contents_id IS NOT NULL AND items_id IS NULL) OR (contents_id IS NULL AND items_id IS NOT NULL))
 );
 
->>>>>>> 0fc14a10c78a25cbace7667b3e38f623b5c6f768
 CREATE TABLE post (
   post_id BIGINT NOT NULL AUTO_INCREMENT,
   members_id BIGINT NOT NULL,
