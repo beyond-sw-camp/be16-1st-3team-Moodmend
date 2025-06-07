@@ -3,7 +3,7 @@
 
 &nbsp;
 <p align="center">
-  <img src="./images/logo/moodmend_logo.png" width="200" alt="Moodmend Logo"/>
+  <img src="./images/logo/moodmend_logo.png" width="1000" alt="Moodmend Logo"/>
 </p>
 &nbsp;
 
