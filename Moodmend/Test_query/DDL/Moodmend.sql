@@ -119,8 +119,8 @@ CREATE TABLE download (
 
 CREATE TABLE payment (
   payment_id BIGINT NOT NULL AUTO_INCREMENT,
-  members_id BIGINT NOT NULL,
-  items_id BIGINT NOT NULL,
+  members_id BIGINT NULL,
+  items_id BIGINT NULL,
   payment_method ENUM('신용카드','카카오페이','삼성페이','아이템') NOT NULL,
   payment_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   refund_date DATETIME,
