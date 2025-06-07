@@ -36,6 +36,16 @@ ERD(Entity Relationship Diagram)를 설계하고, 실제 SQL 쿼리와 프로시
 
 ---
 
+## 📎 프로젝트 주요 산출물  
+각 항목은 클릭 또는 다운로드 링크로 연결됩니다.
+
+- ✅ [요구사항 정의서](#) *(예: Notion, Google Docs 등 링크 삽입)*  
+- ✅ [WBS (Work Breakdown Structure)](#)  
+- ✅ [ERD 설계 이미지 보기](#)  
+- ✅ [테스트용 DML 쿼리 파일 다운로드](#)
+
+---
+
 ## 💡 기대 효과  
 
 - 감정 기반 콘텐츠 큐레이션으로 추천 정확도 향상  
@@ -69,10 +79,10 @@ ERD(Entity Relationship Diagram)를 설계하고, 실제 SQL 쿼리와 프로시
 
 ---
 
-> “감정을 데이터로 설계하다 - Moodmend”
+> “당신의 하루를 닮은 플랫폼 - Moodmend”
 
 ---
 
 <p align="center"><strong>Moodmend · 감정 중심 명상 콘텐츠 플랫폼 DB 설계 프로젝트</strong></p>
 <p align="center"><em>본 문서는 Team Moodmend가 성실히 설계하고 제출한 결과물입니다.</em></p>
-<p align="center"><strong>감사합니다.
+<p align="center"><strong>감사합니다.</strong></p>
