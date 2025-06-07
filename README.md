@@ -1,4 +1,4 @@
-# 🧘‍♀️ Moodmend ERD 설계 프로젝트  
+# 🧘‍♀️ Moodmend DB 프로젝트  
 감정 기반 명상 콘텐츠 추천 플랫폼 **Moodmend**의 데이터베이스 모델링 프로젝트입니다.
 
 &nbsp;
