@@ -18,6 +18,11 @@ ERD(Entity Relationship Diagram)를 설계하고, 실제 SQL 쿼리와 프로시
 
 ---
 
+## 📅 프로젝트 기간  
+**2025.06.05 ~ 2025.06.09**
+
+---
+
 ## 🎯 기획 의도 및 배경  
 명상은 여전히 비주류로 인식되는 콘텐츠입니다. 이에 따라 다음과 같은 방향성을 중심으로 DB 구조를 설계했습니다:
 
@@ -45,8 +50,8 @@ ERD(Entity Relationship Diagram)를 설계하고, 실제 SQL 쿼리와 프로시
 ## 📎 프로젝트 주요 산출물  
 각 항목은 클릭 또는 다운로드 링크로 연결됩니다.
 
-- ✅ [요구사항 정의서](#) *(예: Notion, Google Docs 등 링크 삽입)*  
-- ✅ [WBS (Work Breakdown Structure)](#)  
+- ✅ [요구사항 정의서](https://docs.google.com/spreadsheets/d/1lFGjxB9mXCP0s3Rz3rKsKB5AYQrcu9vMIBpgAjZERnI/edit?gid=1298947418#gid=1298947418)  
+- ✅ [WBS (Work Breakdown Structure)](https://docs.google.com/spreadsheets/d/1lFGjxB9mXCP0s3Rz3rKsKB5AYQrcu9vMIBpgAjZERnI/edit?gid=0#gid=0)  
 - ✅ [ERD 설계 이미지 보기](#)  
 - ✅ [테스트용 DML 쿼리 파일 다운로드](#)
 
