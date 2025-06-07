@@ -549,7 +549,7 @@ END $$
 
 DELIMITER ;
 
-DELIMITER $$Add commentMore actions
+DELIMITER $$
 
 CREATE PROCEDURE 승지_01_회원관리_회원가입 (
   IN p_name VARCHAR(20),
