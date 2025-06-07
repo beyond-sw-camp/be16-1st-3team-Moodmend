@@ -1,6 +1,6 @@
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `성후_01_콘텐츠_등록`(
+CREATE PROCEDURE 성후_01_콘텐츠_등록(
     IN p_members_id BIGINT,
     IN p_emotion_id BIGINT,
     IN p_name VARCHAR(100),
@@ -46,11 +46,9 @@ BEGIN
     );
 END $$
 
-DELIMITER ;
-
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `성후_02_콘텐츠_수정`(
+CREATE PROCEDURE 성후_02_콘텐츠_수정(
     IN p_members_id BIGINT,
     IN p_contents_id BIGINT,
     IN p_name VARCHAR(100),
@@ -92,11 +90,9 @@ BEGIN
     WHERE contents_id = p_contents_id AND members_id = p_members_id;
 END $$
 
-DELIMITER ;
-
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `성후_03_콘텐츠_삭제`(
+CREATE PROCEDURE 성후_03_콘텐츠_삭제(
     IN p_members_id BIGINT,
     IN p_contents_id BIGINT
 )
@@ -124,11 +120,9 @@ BEGIN
     WHERE contents_id = p_contents_id;
 END $$
 
-DELIMITER ;
-
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `성후_04_콘텐츠_조회`(
+CREATE PROCEDURE 성후_04_콘텐츠_조회(
     IN p_contents_id BIGINT
 )
 BEGIN
@@ -169,11 +163,9 @@ BEGIN
     END IF;
 END $$
 
-DELIMITER ;
-
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `성후_05_좋아요_등록`(
+CREATE PROCEDURE 성후_05_좋아요_등록(
     IN p_members_id BIGINT,
     IN p_contents_id BIGINT
 )
@@ -190,11 +182,9 @@ BEGIN
     VALUES (p_members_id, p_contents_id);
 END $$
 
-DELIMITER ;
-
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `성후_06_좋아요_취소`(
+CREATE PROCEDURE 성후_06_좋아요_취소(
     IN p_members_id BIGINT,
     IN p_contents_id BIGINT
 )
@@ -211,18 +201,15 @@ BEGIN
     WHERE members_id = p_members_id AND contents_id = p_contents_id;
 END $$
 
-DELIMITER ;
-
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `성후_07_콘텐츠_정렬조회`(
-    IN p_sort_column VARCHAR(20),   -- 'views' 또는 'likes'
-    IN p_sort_order VARCHAR(4)      -- 'ASC' 또는 'DESC'
+CREATE PROCEDURE 성후_07_콘텐츠_정렬조회(
+    IN p_sort_column VARCHAR(20),
+    IN p_sort_order VARCHAR(4)
 )
 BEGIN
     DECLARE v_order_column VARCHAR(30);
 
-    -- 정렬 컬럼 확인
     IF p_sort_column = 'likes' THEN
         SET v_order_column = 'like_count';
     ELSE
@@ -249,11 +236,9 @@ BEGIN
     DEALLOCATE PREPARE stmt;
 END $$
 
-DELIMITER ;
-
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `성후_08_콘텐츠_조회_다운로드`(
+CREATE PROCEDURE 성후_08_콘텐츠_조회_다운로드(
     IN p_members_id BIGINT,
     IN p_contents_id BIGINT
 )
@@ -279,11 +264,9 @@ BEGIN
         '다운로드 완료' AS download_status;
 END $$
 
-DELIMITER ;
-
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `성후_09_카테고리별_콘텐츠_조회`(
+CREATE PROCEDURE 성후_09_카테고리별_콘텐츠_조회(
     IN p_category VARCHAR(20)
 )
 BEGIN
@@ -304,11 +287,9 @@ BEGIN
     WHERE e.emotion_name = p_category;
 END $$
 
-DELIMITER ;
-
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `성후_10_보유_콘텐츠_아이템_조회`(
+CREATE PROCEDURE 성후_10_보유_콘텐츠_아이템_조회(
     IN p_members_id BIGINT
 )
 BEGIN
