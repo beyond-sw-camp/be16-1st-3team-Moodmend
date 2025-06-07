@@ -1114,3 +1114,61 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE 성후_11_콘텐츠_신고 (
+    IN p_members_id BIGINT,
+    IN p_contents_id BIGINT,
+    IN p_reason TEXT
+)
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM reports
+        WHERE members_id = p_members_id AND contents_id = p_contents_id
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '이미 신고한 콘텐츠입니다.';
+    END IF;
+
+    INSERT INTO reports (members_id, contents_id, reason, reported_at, status)
+    VALUES (p_members_id, p_contents_id, p_reason, NOW(), '검토 중');
+END $$
+
+DELIMITER $$
+
+CREATE PROCEDURE 성후_12_신고_조회_유저 (
+    IN p_members_id BIGINT
+)
+BEGIN
+    SELECT 
+        r.contents_id,
+        c.name AS contents_name,
+        r.reason,
+        r.reported_at,
+        r.status
+    FROM reports r
+    JOIN contents c ON r.contents_id = c.contents_id
+    WHERE r.members_id = p_members_id
+    ORDER BY r.reported_at DESC;
+END $$
+
+DELIMITER $$
+
+CREATE PROCEDURE 성후_13_신고_조회_관리자 ()
+BEGIN
+    SELECT 
+        r.members_id,
+        m.nickname AS 신고자,
+        r.contents_id,
+        c.name AS contents_name,
+        r.reason,
+        r.reported_at,
+        r.status
+    FROM reports r
+    JOIN contents c ON r.contents_id = c.contents_id
+    JOIN members m ON r.members_id = m.members_id
+    ORDER BY r.reported_at DESC;
+END $$
+
+DELIMITER ;
