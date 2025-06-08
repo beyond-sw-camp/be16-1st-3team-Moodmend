@@ -219,7 +219,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE DEFINER=`root`@`%` PROCEDURE `민형_01_장바구니_관리`(
+CREATE PROCEDURE 민형_01_장바구니_관리 (
     IN p_action VARCHAR(20),          -- 'add', 'remove', 'clear'
     IN p_members_id BIGINT,
     IN p_contents_id BIGINT
