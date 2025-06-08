@@ -441,3 +441,147 @@ BEGIN
 END $$
 
 DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE 성후_14_아이템_스토어_기능(
+    IN p_action VARCHAR(20),
+    IN p_members_id BIGINT,
+    IN p_items_id BIGINT
+)
+BEGIN
+    DECLARE v_price INT;
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = '아이템 처리 중 오류 발생';
+    END;
+
+    IF p_action = 'list' THEN
+        SELECT * FROM items;
+
+    ELSEIF p_action = 'add_cart' THEN
+        IF EXISTS (
+            SELECT 1 FROM cart
+            WHERE members_id = p_members_id AND items_id = p_items_id
+        ) THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = '이미 장바구니에 있는 아이템입니다.';
+        END IF;
+
+        INSERT INTO cart (members_id, items_id)
+        VALUES (p_members_id, p_items_id);
+
+    ELSEIF p_action = 'buy' THEN
+        IF EXISTS (
+            SELECT 1 FROM owned
+            WHERE members_id = p_members_id AND items_id = p_items_id
+        ) THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = '이미 소유한 아이템입니다.';
+        END IF;
+
+        SELECT items_price INTO v_price
+        FROM items
+        WHERE items_id = p_items_id;
+
+        START TRANSACTION;
+
+        UPDATE members
+        SET point = point - v_price
+        WHERE members_id = p_members_id AND point >= v_price;
+
+        INSERT INTO owned (members_id, items_id, payment_detail_id, source_type)
+        VALUES (p_members_id, p_items_id, NULL, '결제');
+
+        COMMIT;
+    END IF;
+END $$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE 성후_15_아이템_관리기능(
+    IN p_action VARCHAR(10),
+    IN p_items_id BIGINT,
+    IN p_members_id BIGINT,
+    IN p_name VARCHAR(30),
+    IN p_category ENUM('헤어','상의','하의','신발','악세서리','테두리','뱃지'),
+    IN p_price INT,
+    IN p_desc TEXT,
+    IN p_thumbnail TEXT,
+    IN p_graphic_source TEXT
+)
+BEGIN
+    IF p_action = 'create' THEN
+        INSERT INTO items (
+            members_id, items_name, items_category,
+            items_price, items_desc, items_thumbnail, graphic_source
+        ) VALUES (
+            p_members_id, p_name, p_category,
+            p_price, p_desc, p_thumbnail, p_graphic_source
+        );
+
+    ELSEIF p_action = 'update' THEN
+        UPDATE items
+        SET
+            items_name = p_name,
+            items_category = p_category,
+            items_price = p_price,
+            items_desc = p_desc,
+            items_thumbnail = p_thumbnail,
+            graphic_source = p_graphic_source
+        WHERE items_id = p_items_id;
+
+    ELSEIF p_action = 'delete' THEN
+        DELETE FROM items WHERE items_id = p_items_id;
+    END IF;
+END $$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE PROCEDURE 성후_16_아바타_기능(
+    IN p_action VARCHAR(10),
+    IN p_members_id BIGINT,
+    IN p_avatar_name VARCHAR(50),
+    IN p_is_default BOOLEAN
+)
+BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '아바타 처리 중 오류 발생';
+    END;
+
+    IF p_action = 'view' THEN
+        SELECT * FROM avatar
+        WHERE members_id = p_members_id;
+
+    ELSEIF p_action = 'save' THEN
+        START TRANSACTION;
+
+        IF EXISTS (
+            SELECT 1 FROM avatar WHERE members_id = p_members_id
+        ) THEN
+            UPDATE avatar
+            SET avatar_name = p_avatar_name,
+                is_default = p_is_default
+            WHERE members_id = p_members_id;
+        ELSE
+            INSERT INTO avatar (members_id, avatar_name, is_default)
+            VALUES (p_members_id, p_avatar_name, p_is_default);
+        END IF;
+
+        COMMIT;
+    END IF;
+END $$
+
+DELIMITER ;
