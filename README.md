@@ -860,7 +860,7 @@ END $$
 DELIMITER ;
 DELIMITER $$
 
-CREATE PROCEDURE 지현_08_출석_조회 (
+CREATE PROCEDURE 출석_조회 (
     IN p_members_id BIGINT
 )
 BEGIN
@@ -914,7 +914,7 @@ END $$
 DELIMITER ;
 DELIMITER $$
 
-CREATE PROCEDURE 민형_09_클래스_조회()
+CREATE PROCEDURE 클래스_조회()
 BEGIN
     SELECT 
         mc.meditation_class_id,
