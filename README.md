@@ -529,7 +529,7 @@ DELIMITER ;
 ### 11. 플레이리스트 생성 프로시저
 
 <p align="center">
-  <img src="./Moodmend/images/Test_Query/R011_플레이리스트_생성_수정.png" width="800" alt="플레이리스트 생성 프로시저 테스트 결과"/>
+  <img src="./Moodmend/images/Test_Query/R011_플레이리스트_생성(수동).png" width="800" alt="플레이리스트 생성 프로시저 테스트 결과"/>
 </p>
 
 ```sql
@@ -610,7 +610,7 @@ call moodmend.플레이리스트_기능('create', 3, 1, '성후의 플레이리�
 ### 13. 신규유저 100포인트 지급 프로시저
 
 <p align="center">
-  <img src="./Moodmend/images/Test_Query/R013_신규유저_100포인트_지급.png" width="800" alt="신규유저 100포인트 지급 프로시저 테스트 결과"/>
+  <img src="./Moodmend/images/Test_Query/R013_신규유저_100포인트_지급(수동).png" width="800" alt="신규유저 100포인트 지급 프로시저 테스트 결과"/>
 </p>
 
 ```sql
@@ -634,7 +634,7 @@ select * from members;
 ### 15. 아이템 등록 프로시저
 
 <p align="center">
-  <img src="./Moodmend/images/Test_Query/R015_아이템_등록.png" width="800" alt="아이템 등록 프로시저 테스트 결과"/>
+  <img src="./Moodmend/images/Test_Query/R015_아이템_등록(수동).png" width="800" alt="아이템 등록 프로시저 테스트 결과"/>
 </p>
 
 ```sql
@@ -658,7 +658,7 @@ call moodmend.보유내역조회(3);
 ### 17. 아바타 등록 프로시저
 
 <p align="center">
-  <img src="./Moodmend/images/Test_Query/R017_아이템_등록.png" width="800" alt="아이템 등록 프로시저 테스트 결과"/>
+  <img src="./Moodmend/images/Test_Query/R017_아바타_등록.png" width="800" alt="아바타 등록 프로시저 테스트 결과"/>
 </p>
 
 ```sql
