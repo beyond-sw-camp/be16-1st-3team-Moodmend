@@ -149,13 +149,13 @@ CREATE PROCEDURE 승지_06_게시판_등록 (
   IN p_members_id BIGINT,
   IN p_title VARCHAR(50),
   IN p_text TEXT,
-  IN p_category VARCHAR(10),
+  IN p_category VARCHAR(10), -- ENUM이지만 VARCHAR로 받고 체크
   IN p_is_anonymous BOOLEAN
 )
 BEGIN
   DECLARE v_avatar_id BIGINT;
 
-  -- 카테고리 유효성 검사
+  -- 유효 카테고리 검사
   IF p_category NOT IN ('고민', '질문', '좋은글', '자유') THEN
     SIGNAL SQLSTATE '45000'
     SET MESSAGE_TEXT = '유효하지 않은 게시글 카테고리입니다.';
