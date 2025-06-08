@@ -839,6 +839,9 @@ BEGIN
     );
 END $$
 
+DELIMITER ;
+
+
 DELIMITER $$
 
 CREATE PROCEDURE 성후_02_콘텐츠_수정(
@@ -883,6 +886,9 @@ BEGIN
     WHERE contents_id = p_contents_id AND members_id = p_members_id;
 END $$
 
+DELIMITER ;
+
+
 DELIMITER $$
 
 CREATE PROCEDURE 성후_03_콘텐츠_삭제(
@@ -912,6 +918,9 @@ BEGIN
     DELETE FROM contents 
     WHERE contents_id = p_contents_id;
 END $$
+
+DELIMITER ;
+
 
 DELIMITER $$
 
@@ -956,6 +965,9 @@ BEGIN
     END IF;
 END $$
 
+DELIMITER ;
+
+
 DELIMITER $$
 
 CREATE PROCEDURE 성후_05_좋아요_등록(
@@ -963,17 +975,34 @@ CREATE PROCEDURE 성후_05_좋아요_등록(
     IN p_contents_id BIGINT
 )
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '좋아요 등록 중 오류 발생(롤백 수행됨)';
+    END;
+
+    START TRANSACTION;
+
+    -- 중복 좋아요 방지: 트랜잭션 내에서도 확인
     IF EXISTS (
         SELECT 1 FROM likes
         WHERE members_id = p_members_id AND contents_id = p_contents_id
+        FOR UPDATE
     ) THEN
+        ROLLBACK;
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = '이미 좋아요를 눌렀습니다.';
+        SET MESSAGE_TEXT = '이미 좋아요를 누르셨습니다.';
     END IF;
 
     INSERT INTO likes (members_id, contents_id)
     VALUES (p_members_id, p_contents_id);
+
+    COMMIT;
 END $$
+
+DELIMITER ;
+
 
 DELIMITER $$
 
@@ -982,17 +1011,34 @@ CREATE PROCEDURE 성후_06_좋아요_취소(
     IN p_contents_id BIGINT
 )
 BEGIN
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '좋아요 취소 중 오류 발생(롤백 수행됨)';
+    END;
+
+    START TRANSACTION;
+
+    -- 좋아요 눌렀는지 확인 및 잠금
     IF NOT EXISTS (
         SELECT 1 FROM likes
         WHERE members_id = p_members_id AND contents_id = p_contents_id
+        FOR UPDATE
     ) THEN
+        ROLLBACK;
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = '좋아요를 누른 적이 없습니다.';
+        SET MESSAGE_TEXT = '좋아요를 누른 기록이 없습니다.';
     END IF;
 
     DELETE FROM likes
     WHERE members_id = p_members_id AND contents_id = p_contents_id;
+
+    COMMIT;
 END $$
+
+DELIMITER ;
+
 
 DELIMITER $$
 
@@ -1029,6 +1075,9 @@ BEGIN
     DEALLOCATE PREPARE stmt;
 END $$
 
+DELIMITER ;
+
+
 DELIMITER $$
 
 CREATE PROCEDURE 성후_08_콘텐츠_조회_다운로드(
@@ -1057,6 +1106,9 @@ BEGIN
         '다운로드 완료' AS download_status;
 END $$
 
+DELIMITER ;
+
+
 DELIMITER $$
 
 CREATE PROCEDURE 성후_09_카테고리별_콘텐츠_조회(
@@ -1079,6 +1131,9 @@ BEGIN
     JOIN members m ON c.members_id = m.members_id
     WHERE e.emotion_name = p_category;
 END $$
+
+DELIMITER ;
+
 
 DELIMITER $$
 
@@ -1115,6 +1170,7 @@ END $$
 
 DELIMITER ;
 
+
 DELIMITER $$
 
 CREATE PROCEDURE 성후_11_콘텐츠_신고 (
@@ -1135,6 +1191,9 @@ BEGIN
     VALUES (p_members_id, p_contents_id, p_reason, NOW(), '검토 중');
 END $$
 
+DELIMITER ;
+
+
 DELIMITER $$
 
 CREATE PROCEDURE 성후_12_신고_조회_유저 (
@@ -1152,6 +1211,9 @@ BEGIN
     WHERE r.members_id = p_members_id
     ORDER BY r.reported_at DESC;
 END $$
+
+DELIMITER ;
+
 
 DELIMITER $$
 
