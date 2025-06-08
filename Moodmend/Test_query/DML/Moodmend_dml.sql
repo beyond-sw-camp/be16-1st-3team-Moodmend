@@ -216,15 +216,30 @@ END $$
 
 DELIMITER ;
 
+
 DELIMITER $$
 
-CREATE PROCEDURE 민형_01_장바구니_관리 (
+CREATE DEFINER=`root`@`%` PROCEDURE `민형_01_장바구니_관리`(
     IN p_action VARCHAR(20),          -- 'add', 'remove', 'clear'
     IN p_members_id BIGINT,
     IN p_contents_id BIGINT
 )
 BEGIN
+    DECLARE v_is_premium ENUM('일반', '프리미엄');
+
     IF p_action = 'add' THEN
+        -- 프리미엄 여부 확인
+        SELECT is_premium INTO v_is_premium
+        FROM contents
+        WHERE contents_id = p_contents_id;
+
+        -- 일반 콘텐츠일 경우 예외 발생
+        IF v_is_premium != '프리미엄' THEN
+            SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = '무료 콘텐츠는 장바구니에 담을 수 없습니다.';
+        END IF;
+
+        -- 장바구니에 추가 (중복 방지)
         INSERT IGNORE INTO cart (members_id, contents_id)
         VALUES (p_members_id, p_contents_id);
 
@@ -236,10 +251,9 @@ BEGIN
         DELETE FROM cart
         WHERE members_id = p_members_id;
     END IF;
-END $$
+END$$
 
 DELIMITER ;
-
 
 
 DELIMITER $$
