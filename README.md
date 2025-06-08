@@ -75,7 +75,6 @@ Moodmend는 다음과 같은 핵심 목표를 중심으로 설계되었습니다
   <img src="./Moodmend/images/ERD/ERD_Moodmend.png" width="2000" alt="Moodmend ERD"/>
 </p>
 
-- ✅ [테스트용 DML 쿼리 파일 다운로드](#)
 ---
 ## 📄 프로시저 테스트 결과
 
@@ -675,9 +674,6 @@ DELIMITER $$
 DELIMITER ;
 ```
 
-</details>
-
----
 
 ### 23. 클래스 신청 프로시저
 
