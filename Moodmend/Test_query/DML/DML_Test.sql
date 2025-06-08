@@ -10,7 +10,7 @@ insert into emotion(emotion_name, intensity) values ('슬픔', 1);
 
 -- #5. 좋아요_취소 프로시저
 
--- #6. 
+-- #6. 카테고리(감정) 등록 및 조회
 select * from contents where emotion_id = 1;
 
 -- #7. 콘텐츠_신고
