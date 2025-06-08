@@ -522,11 +522,22 @@ DELIMITER ;
 
 ```sql
 DELIMITER $$
-
+CREATE PROCEDURE 주문_상세_조회 (
+    IN p_payment_id BIGINT
+)
+BEGIN
+    SELECT 
+        pd.payment_detail_id,
+        pd.purchase_type,
+        pd.price,
+        c.name AS contents_name
+    FROM payment_detail pd
+    LEFT JOIN contents c ON pd.contents_id = c.contents_id
+    WHERE pd.payment_id = p_payment_id;
+END $$
 
 DELIMITER ;
 ```
-
 
 ### 12. 플레이리스트 등록 프로시저
 
