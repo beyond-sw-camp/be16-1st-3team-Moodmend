@@ -529,7 +529,7 @@ DELIMITER ;
 ### 11. 플레이리스트 생성 프로시저
 
 <p align="center">
-  <img src="./Moodmend/images/Test_Query/R011_플레이리스트_생성.png" width="800" alt="플레이리스트 생성 프로시저 테스트 결과"/>
+  <img src="./Moodmend/images/Test_Query/R011_플레이리스트_생성_수정.png" width="800" alt="플레이리스트 생성 프로시저 테스트 결과"/>
 </p>
 
 ```sql
@@ -593,7 +593,6 @@ END $$
 
 DELIMITER ;
 
-call moodmend.플레이리스트_기능('create', 3, 1, '성후의 플레이리스트', '나의 명상!', 1, 2);
 ```
 
 ### 12. 플레이리스트 등록 프로시저
@@ -603,10 +602,9 @@ call moodmend.플레이리스트_기능('create', 3, 1, '성후의 플레이리�
 </p>
 
 ```sql
-DELIMITER $$
+call moodmend.플레이리스트_기능('create', 3, 1, '성후의 플레이리스트', '나의 명상!', 1, 2);
 
 
-DELIMITER ;
 ```
 
 ### 13. 신규유저 100포인트 지급 프로시저
@@ -629,10 +627,8 @@ DELIMITER ;
 </p>
 
 ```sql
-DELIMITER $$
-
-
-DELIMITER ;
+회원등록 하면 자동으로 지급
+select * from members;
 ```
 
 ### 15. 아이템 등록 프로시저
@@ -642,10 +638,9 @@ DELIMITER ;
 </p>
 
 ```sql
-DELIMITER $$
-
-
-DELIMITER ;
+select * from items;
+insert into items(members_id, items_name, items_category, items_price, items_desc, items_thumbnail, graphic_source)
+values(1, '곱슬머리', '헤어', 50, '한정판입니다.', 'url', 'url');
 ```
 
 ### 16. 아이템 구매 보유내역 조회 프로시저
@@ -655,10 +650,7 @@ DELIMITER ;
 </p>
 
 ```sql
-DELIMITER $$
-
-
-DELIMITER ;
+call moodmend.보유내역조회(3);
 ```
 
 
@@ -671,6 +663,39 @@ DELIMITER ;
 
 ```sql
 DELIMITER $$
+CREATE PROCEDURE 아바타_조회_수정_등록 (
+    IN p_members_id BIGINT,
+    IN p_avatar_name VARCHAR(50),
+    IN p_is_default BOOLEAN
+)
+BEGIN
+    DECLARE v_exists INT;
+
+    START TRANSACTION;
+
+    -- 존재 여부 확인
+    SELECT COUNT(*) INTO v_exists
+    FROM avatar
+    WHERE members_id = p_members_id;
+
+    -- 수정 또는 등록
+    IF v_exists > 0 THEN
+        UPDATE avatar
+        SET avatar_name = p_avatar_name,
+            is_default = p_is_default
+        WHERE members_id = p_members_id;
+    ELSE
+        INSERT INTO avatar (members_id, avatar_name, is_default)
+        VALUES (p_members_id, p_avatar_name, p_is_default);
+    END IF;
+
+    -- 조회 결과 반환
+    SELECT *
+    FROM avatar
+    WHERE members_id = p_members_id;
+
+    COMMIT;
+END$$
 
 
 DELIMITER ;
@@ -684,7 +709,43 @@ DELIMITER ;
 
 ```sql
 DELIMITER $$
+CREATE PROCEDURE 게시판_등록 (
+  IN p_members_id BIGINT,
+  IN p_title VARCHAR(50),
+  IN p_text TEXT,
+  IN p_category VARCHAR(10),
+  IN p_is_anonymous BOOLEAN
+)
+BEGIN
+  DECLARE v_avatar_id BIGINT;
 
+  -- 유효 카테고리 검사
+  IF p_category NOT IN ('고민', '질문', '좋은글', '자유') THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = '유효하지 않은 게시글 카테고리입니다.';
+  END IF;
+
+  -- 아바타 존재 확인
+  IF NOT EXISTS (
+    SELECT 1 FROM avatar WHERE members_id = p_members_id
+  ) THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = '해당 멤버는 등록된 아바타가 없습니다.';
+  END IF;
+
+  -- 아바타 ID 조회
+  SELECT avatar_id INTO v_avatar_id
+  FROM avatar
+  WHERE members_id = p_members_id
+  LIMIT 1;
+
+  -- 게시글 등록
+  INSERT INTO post (
+    members_id, avatar_id, title, text, category, is_anonymous, created_at, updated_at
+  ) VALUES (
+    p_members_id, v_avatar_id, p_title, p_text, p_category, p_is_anonymous, NOW(), NOW()
+  );
+END$$
 
 DELIMITER ;
 ```
@@ -698,9 +759,43 @@ DELIMITER ;
 
 ```sql
 DELIMITER $$
+CREATE PROCEDURE 감정_다이어리_기록 (
+    IN p_members_id BIGINT,
+    IN p_emotion_id BIGINT,
+    IN p_intensity TINYINT,
+    IN p_title VARCHAR(255),
+    IN p_contents TEXT
+)
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM emotion_diary 
+        WHERE members_id = p_members_id AND logged_at = CURRENT_DATE
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '오늘은 이미 감정 다이어리를 작성하셨습니다.';
+    END IF;
 
+    INSERT INTO emotion_diary (
+        members_id,
+        emotion_id,
+        title,
+        contents,
+        logged_at
+    ) VALUES (
+        p_members_id,
+        p_emotion_id,
+        p_title,
+        p_contents,
+        CURRENT_DATE
+    );
+
+    UPDATE emotion
+    SET intensity = p_intensity
+    WHERE emotion_id = p_emotion_id;
+END $$
 
 DELIMITER ;
+select * from emotion_diary;
 ```
 
 ### 20. 감정 기반 콘텐츠 추천 프로시저
@@ -711,7 +806,30 @@ DELIMITER ;
 
 ```sql
 DELIMITER $$
+CREATE PROCEDURE 감정_기반_콘텐츠_추천 (
+    IN p_members_id BIGINT
+)
+BEGIN
+    DECLARE v_emotion_id BIGINT;
 
+    SELECT emotion_id INTO v_emotion_id
+    FROM emotion_diary
+    WHERE members_id = p_members_id
+    ORDER BY logged_at DESC
+    LIMIT 1;
+
+    SELECT 
+        c.contents_id,
+        c.name,
+        c.description,
+        c.thumbnail,
+        c.duration,
+        c.price,
+        c.is_premium
+    FROM contents c
+    WHERE c.emotion_id = v_emotion_id
+    ORDER BY upload_at DESC;
+END $$
 
 DELIMITER ;
 ```
@@ -724,8 +842,35 @@ DELIMITER ;
 
 ```sql
 DELIMITER $$
+CREATE PROCEDURE 출석_기록 (
+    IN p_members_id BIGINT
+)
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM attendance 
+        WHERE members_id = p_members_id AND attendance_date = CURRENT_DATE
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '오늘은 이미 출석하셨습니다.';
+    END IF;
 
+    INSERT INTO attendance (members_id, attendance_date)
+    VALUES (p_members_id, CURRENT_DATE);
+END $$
+DELIMITER ;
+DELIMITER $$
 
+CREATE PROCEDURE 지현_08_출석_조회 (
+    IN p_members_id BIGINT
+)
+BEGIN
+    SELECT 
+        attendance_id,
+        attendance_date
+    FROM attendance
+    WHERE members_id = p_members_id
+    ORDER BY attendance_date DESC;
+END $$
 DELIMITER ;
 ```
 
@@ -737,7 +882,53 @@ DELIMITER ;
 
 ```sql
 DELIMITER $$
+CREATE PROCEDURE 클래스_개설_및_상태설정 (
+    IN p_members_id BIGINT,
+    IN p_title VARCHAR(50),
+    IN p_category VARCHAR(20),
+    IN p_start_time DATETIME,
+    IN p_end_time DATETIME,
+    IN p_limit INT
+)
+BEGIN
+    DECLARE v_now DATETIME;
+    DECLARE v_status ENUM('개강전','모집중','정원초과','모집완료');
 
+    SET v_now = NOW();
+
+    IF p_start_time > v_now THEN
+        SET v_status = '모집중';
+    ELSE
+        SET v_status = '개강전';
+    END IF;
+
+    INSERT INTO meditation_class (
+        members_id, title, category,
+        start_time, end_time, `limit`, status
+    ) VALUES (
+        p_members_id, p_title, p_category,
+        p_start_time, p_end_time, p_limit, v_status
+    );
+END $$
+
+DELIMITER ;
+DELIMITER $$
+
+CREATE PROCEDURE 민형_09_클래스_조회()
+BEGIN
+    SELECT 
+        mc.meditation_class_id,
+        mc.title,
+        mc.category,
+        mc.start_time,
+        mc.end_time,
+        mc.limit,
+        mc.status,
+        m.nickname AS teacher
+    FROM meditation_class mc
+    JOIN members m ON mc.members_id = m.members_id
+    ORDER BY mc.start_time DESC;
+END $$
 
 DELIMITER ;
 ```
@@ -751,7 +942,41 @@ DELIMITER ;
 
 ```sql
 DELIMITER $$
+CREATE PROCEDURE 클래스_신청 (
+    IN p_members_id BIGINT,
+    IN p_meditation_class_id BIGINT
+)
+BEGIN
+    DECLARE v_count INT;
 
+    -- 현재 예약 인원 수 확인
+    SELECT COUNT(*) INTO v_count
+    FROM class_reservation
+    WHERE meditation_class_id = p_meditation_class_id;
+
+    -- 중복 예약 여부 확인
+    IF EXISTS (
+        SELECT 1 FROM class_reservation
+        WHERE members_id = p_members_id
+          AND meditation_class_id = p_meditation_class_id
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '이미 해당 클래스를 신청하셨습니다.';
+    END IF;
+
+    -- 정원 초과 여부 확인 (limit 예약어 처리)
+    IF v_count >= (
+        SELECT `limit` FROM meditation_class
+        WHERE meditation_class_id = p_meditation_class_id
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = '정원이 초과되었습니다.';
+    END IF;
+
+    -- 예약 등록
+    INSERT INTO class_reservation (meditation_class_id, members_id)
+    VALUES (p_meditation_class_id, p_members_id);
+END $$
 
 DELIMITER ;
 ```
