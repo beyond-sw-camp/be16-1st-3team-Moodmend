@@ -34,3 +34,4 @@ primary key(post_id), foreign key(members_id) references members(members_id), fo
 -- 게시글 좋아요 테이블 생성
 create table post_likes(post_id bigint not null, members_id bigint not null, 
 primary key(post_id, members_id));
+
