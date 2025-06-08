@@ -38,3 +38,9 @@ update members set point = 100 where members_id = 5;
 select * from items;
 insert into items(members_id, items_name, items_category, items_price, items_desc, items_thumbnail, graphic_source)
 values(1, '곱슬머리', '헤어', 50, '한정판입니다.', 'url', 'url');
+
+-- #16. 아이템 구매 및 보유내역 조회
+
+-- #17. 아바타 등록 및 수정
+
+-- #18. 게시물 등록

@@ -11,22 +11,58 @@ CREATE PROCEDURE 승지_01_회원관리_회원가입 (
   IN p_signup_type ENUM('Email', 'Kakao', 'Google', 'Naver')
 )
 BEGIN
+  DECLARE v_members_id BIGINT;
+  DECLARE v_member_count INT;
+  DECLARE v_initial_point INT DEFAULT 0;
+
+  START TRANSACTION;
+
+  -- 중복 확인
   IF EXISTS (
     SELECT 1 FROM members 
     WHERE phone_number = p_phone_number OR email = p_email
   ) THEN
+    ROLLBACK;
     SIGNAL SQLSTATE '45000'
     SET MESSAGE_TEXT = '이미 등록된 이메일 또는 전화번호입니다.';
   ELSE
+    -- 회원 수 확인
+    SELECT COUNT(*) INTO v_member_count FROM members;
+    IF v_member_count = 0 THEN
+      SET v_initial_point = 100;
+    END IF;
+
+    -- 회원 등록
     INSERT INTO members (
       name, password, phone_number, nickname, birthday, email,
       role, signup_type, created_at, updated_at, point
     )
     VALUES (
       p_name, p_password, p_phone_number, p_nickname, p_birthday, p_email,
-      p_role, p_signup_type, NOW(), NOW(), 0
+      p_role, p_signup_type, NOW(), NOW(), v_initial_point
     );
+
+    SET v_members_id = LAST_INSERT_ID();
+
+    -- 기본 아바타 생성
+    INSERT INTO avatar (
+      members_id,
+      avatar_name,
+      is_default
+    ) VALUES (
+      v_members_id,
+      '기본 아바타',
+      TRUE
+    );
+
+    -- 최초 가입자라면 포인트 이력 남기기 (선택사항)
+    IF v_initial_point = 100 THEN
+      INSERT INTO point_reward (members_id, point_reward, reason)
+      VALUES (v_members_id, 100, '최초 가입자 보상');
+    END IF;
   END IF;
+
+  COMMIT;
 END$$
 
 DELIMITER ;
@@ -107,20 +143,32 @@ END$$
 DELIMITER ;
 
 
-DELIMITER //
+DELIMITER $$
+
 CREATE PROCEDURE 승지_06_게시판_등록 (
   IN p_members_id BIGINT,
-  IN p_avatar_id BIGINT,
   IN p_title VARCHAR(50),
   IN p_text TEXT,
   IN p_category ENUM('고민','질문','좋은글','자유'),
   IN p_is_anonymous BOOLEAN
 )
 BEGIN
-  INSERT INTO post (members_id, avatar_id, title, text, category, is_anonymous, created_at, updated_at)
-  VALUES (p_members_id, p_avatar_id, p_title, p_text, p_category, p_is_anonymous, NOW(), NOW());
+  DECLARE v_avatar_id BIGINT;
+
+  -- 해당 멤버의 아바타 ID 조회
+  SELECT avatar_id INTO v_avatar_id
+  FROM avatar
+  WHERE members_id = p_members_id;
+
+  -- 게시글 등록
+  INSERT INTO post (
+    members_id, avatar_id, title, text, category, is_anonymous, created_at, updated_at
+  ) VALUES (
+    p_members_id, v_avatar_id, p_title, p_text, p_category, p_is_anonymous, NOW(), NOW()
+  );
 END;
 //
+
 DELIMITER ;
 
 
