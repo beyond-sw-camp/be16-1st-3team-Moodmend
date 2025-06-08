@@ -226,22 +226,22 @@ CREATE PROCEDURE 민형_01_장바구니_관리 (
 )
 BEGIN
     DECLARE v_is_premium ENUM('일반', '프리미엄');
+    DECLARE v_price INT UNSIGNED;
 
     IF p_action = 'add' THEN
-        -- 프리미엄 여부 확인
-        SELECT is_premium INTO v_is_premium
+        -- 프리미엄 여부 및 가격 확인
+        SELECT is_premium, price INTO v_is_premium, v_price
         FROM contents
         WHERE contents_id = p_contents_id;
 
-        -- 일반 콘텐츠일 경우 예외 발생
         IF v_is_premium != '프리미엄' THEN
             SIGNAL SQLSTATE '45000'
             SET MESSAGE_TEXT = '무료 콘텐츠는 장바구니에 담을 수 없습니다.';
         END IF;
 
-        -- 장바구니에 추가 (중복 방지)
-        INSERT IGNORE INTO cart (members_id, contents_id)
-        VALUES (p_members_id, p_contents_id);
+        -- total 포함하여 장바구니에 추가
+        INSERT IGNORE INTO cart (members_id, contents_id, total)
+        VALUES (p_members_id, p_contents_id, v_price);
 
     ELSEIF p_action = 'remove' THEN
         DELETE FROM cart
@@ -251,7 +251,7 @@ BEGIN
         DELETE FROM cart
         WHERE members_id = p_members_id;
     END IF;
-END$$
+END $$
 
 DELIMITER ;
 
@@ -263,48 +263,81 @@ CREATE PROCEDURE 민형_02_결제_진행 (
     IN p_payment_method ENUM('신용카드', '휴대폰', '계좌이체')
 )
 BEGIN
-    DECLARE v_total INT UNSIGNED DEFAULT 0;
+    DECLARE v_total INT UNSIGNED;
     DECLARE v_payment_id BIGINT;
+    DECLARE v_cart_contents_id BIGINT;
+    DECLARE v_cart_items_id BIGINT;
 
-    -- 총 금액 계산
-    SELECT SUM(c.price) INTO v_total
-    FROM cart ca
-    JOIN contents c ON ca.contents_id = c.contents_id
-    WHERE ca.members_id = p_members_id;
-
-    IF v_total IS NULL OR v_total = 0 THEN
+    -- [1] 유효한 결제 대상이 하나만 존재하는지 확인
+    IF NOT EXISTS (
+        SELECT 1 FROM cart
+        WHERE members_id = p_members_id
+          AND ((contents_id IS NOT NULL AND items_id IS NULL) OR (contents_id IS NULL AND items_id IS NOT NULL))
+          AND total IS NOT NULL AND total > 0
+    ) THEN
         SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = '결제할 콘텐츠가 없습니다.';
+        SET MESSAGE_TEXT = '결제할 항목이 없습니다.';
     END IF;
 
-    -- payment 기록
-    INSERT INTO payment (members_id, items_id, payment_method, total_price)
-    VALUES (p_members_id, NULL, p_payment_method, v_total);
+    -- [2] 유효한 데이터 1개를 가져옴 (정확한 조건 포함)
+    SELECT contents_id, items_id, total
+    INTO v_cart_contents_id, v_cart_items_id, v_total
+    FROM cart
+    WHERE members_id = p_members_id
+      AND ((contents_id IS NOT NULL AND items_id IS NULL) OR (contents_id IS NULL AND items_id IS NOT NULL))
+      AND total IS NOT NULL AND total > 0
+    LIMIT 1;
+
+    -- [3] payment 테이블 기록
+    INSERT INTO payment (
+        members_id, items_id, payment_method, total_price
+    )
+    VALUES (
+        p_members_id, v_cart_items_id, p_payment_method, v_total
+    );
 
     SET v_payment_id = LAST_INSERT_ID();
 
-    -- payment_detail + owned 등록
-    INSERT INTO payment_detail (contents_id, payment_id, purchase_type, price)
-    SELECT
-        c.contents_id, v_payment_id, '콘텐츠 구매', c.price
-    FROM cart ca
-    JOIN contents c ON ca.contents_id = c.contents_id
-    WHERE ca.members_id = p_members_id;
+    -- [4] 콘텐츠 결제 처리
+    IF v_cart_contents_id IS NOT NULL THEN
+        INSERT INTO payment_detail (
+            contents_id, payment_id, purchase_type, price
+        )
+        VALUES (
+            v_cart_contents_id, v_payment_id, '콘텐츠 구매', v_total
+        );
 
-    INSERT INTO owned (members_id, contents_id, payment_detail_id, source_type)
-    SELECT 
-        p_members_id, c.contents_id, pd.payment_detail_id, '결제'
-    FROM payment_detail pd
-    JOIN contents c ON pd.contents_id = c.contents_id
-    WHERE pd.payment_id = v_payment_id;
+        INSERT INTO owned (
+            members_id, contents_id, payment_detail_id, source_type
+        )
+        VALUES (
+            p_members_id, v_cart_contents_id, LAST_INSERT_ID(), '결제'
+        );
+    END IF;
 
-    -- 장바구니 비우기
-    DELETE FROM cart
+    -- [5] 아이템 결제 처리
+    IF v_cart_items_id IS NOT NULL THEN
+        INSERT INTO payment_detail (
+            items_id, payment_id, purchase_type, price
+        )
+        VALUES (
+            v_cart_items_id, v_payment_id, '아이템 구매', v_total
+        );
+
+        INSERT INTO owned (
+            members_id, items_id, payment_detail_id, source_type
+        )
+        VALUES (
+            p_members_id, v_cart_items_id, LAST_INSERT_ID(), '결제'
+        );
+    END IF;
+
+    -- [6] 장바구니 비우기
+    DELETE FROM cart 
     WHERE members_id = p_members_id;
 END $$
 
 DELIMITER ;
-
 
 
 DELIMITER $$
@@ -578,12 +611,11 @@ CREATE PROCEDURE 승지_01_회원관리_회원가입 (
 )
 BEGIN
   DECLARE v_members_id BIGINT;
-  DECLARE v_member_count INT;
-  DECLARE v_initial_point INT DEFAULT 0;
+  DECLARE v_initial_point INT DEFAULT 100;
 
   START TRANSACTION;
 
-  -- 중복 확인
+  -- 1. 중복 확인
   IF EXISTS (
     SELECT 1 FROM members 
     WHERE phone_number = p_phone_number OR email = p_email
@@ -591,42 +623,34 @@ BEGIN
     ROLLBACK;
     SIGNAL SQLSTATE '45000'
     SET MESSAGE_TEXT = '이미 등록된 이메일 또는 전화번호입니다.';
-  ELSE
-    -- 회원 수 확인
-    SELECT COUNT(*) INTO v_member_count FROM members;
-    IF v_member_count = 0 THEN
-      SET v_initial_point = 100;
-    END IF;
-
-    -- 회원 등록
-    INSERT INTO members (
-      name, password, phone_number, nickname, birthday, email,
-      role, signup_type, created_at, updated_at, point
-    )
-    VALUES (
-      p_name, p_password, p_phone_number, p_nickname, p_birthday, p_email,
-      p_role, p_signup_type, NOW(), NOW(), v_initial_point
-    );
-
-    SET v_members_id = LAST_INSERT_ID();
-
-    -- 기본 아바타 생성
-    INSERT INTO avatar (
-      members_id,
-      avatar_name,
-      is_default
-    ) VALUES (
-      v_members_id,
-      '기본 아바타',
-      TRUE
-    );
-
-    -- 최초 가입자라면 포인트 이력 남기기 (선택사항)
-    IF v_initial_point = 100 THEN
-      INSERT INTO point_reward (members_id, point_reward, reason)
-      VALUES (v_members_id, 100, '최초 가입자 보상');
-    END IF;
   END IF;
+
+  -- 2. 회원 등록 (포인트 기본 100)
+  INSERT INTO members (
+    name, password, phone_number, nickname, birthday, email,
+    role, signup_type, created_at, updated_at, point
+  )
+  VALUES (
+    p_name, p_password, p_phone_number, p_nickname, p_birthday, p_email,
+    p_role, p_signup_type, NOW(), NOW(), v_initial_point
+  );
+
+  SET v_members_id = LAST_INSERT_ID();
+
+  -- 3. 기본 아바타 등록
+  INSERT INTO avatar (
+    members_id,
+    avatar_name,
+    is_default
+  ) VALUES (
+    v_members_id,
+    '기본 아바타',
+    TRUE
+  );
+
+  -- 4. 포인트 이력 기록
+  INSERT INTO point_reward (members_id, point_reward, reason)
+  VALUES (v_members_id, v_initial_point, '회원가입 보상');
 
   COMMIT;
 END$$

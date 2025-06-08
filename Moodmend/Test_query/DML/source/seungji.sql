@@ -12,12 +12,11 @@ CREATE PROCEDURE 승지_01_회원관리_회원가입 (
 )
 BEGIN
   DECLARE v_members_id BIGINT;
-  DECLARE v_member_count INT;
-  DECLARE v_initial_point INT DEFAULT 0;
+  DECLARE v_initial_point INT DEFAULT 100;
 
   START TRANSACTION;
 
-  -- 중복 확인
+  -- 1. 중복 확인
   IF EXISTS (
     SELECT 1 FROM members 
     WHERE phone_number = p_phone_number OR email = p_email
@@ -25,42 +24,34 @@ BEGIN
     ROLLBACK;
     SIGNAL SQLSTATE '45000'
     SET MESSAGE_TEXT = '이미 등록된 이메일 또는 전화번호입니다.';
-  ELSE
-    -- 회원 수 확인
-    SELECT COUNT(*) INTO v_member_count FROM members;
-    IF v_member_count = 0 THEN
-      SET v_initial_point = 100;
-    END IF;
-
-    -- 회원 등록
-    INSERT INTO members (
-      name, password, phone_number, nickname, birthday, email,
-      role, signup_type, created_at, updated_at, point
-    )
-    VALUES (
-      p_name, p_password, p_phone_number, p_nickname, p_birthday, p_email,
-      p_role, p_signup_type, NOW(), NOW(), v_initial_point
-    );
-
-    SET v_members_id = LAST_INSERT_ID();
-
-    -- 기본 아바타 생성
-    INSERT INTO avatar (
-      members_id,
-      avatar_name,
-      is_default
-    ) VALUES (
-      v_members_id,
-      '기본 아바타',
-      TRUE
-    );
-
-    -- 최초 가입자라면 포인트 이력 남기기 (선택사항)
-    IF v_initial_point = 100 THEN
-      INSERT INTO point_reward (members_id, point_reward, reason)
-      VALUES (v_members_id, 100, '최초 가입자 보상');
-    END IF;
   END IF;
+
+  -- 2. 회원 등록 (포인트 기본 100)
+  INSERT INTO members (
+    name, password, phone_number, nickname, birthday, email,
+    role, signup_type, created_at, updated_at, point
+  )
+  VALUES (
+    p_name, p_password, p_phone_number, p_nickname, p_birthday, p_email,
+    p_role, p_signup_type, NOW(), NOW(), v_initial_point
+  );
+
+  SET v_members_id = LAST_INSERT_ID();
+
+  -- 3. 기본 아바타 등록
+  INSERT INTO avatar (
+    members_id,
+    avatar_name,
+    is_default
+  ) VALUES (
+    v_members_id,
+    '기본 아바타',
+    TRUE
+  );
+
+  -- 4. 포인트 이력 기록
+  INSERT INTO point_reward (members_id, point_reward, reason)
+  VALUES (v_members_id, v_initial_point, '회원가입 보상');
 
   COMMIT;
 END$$

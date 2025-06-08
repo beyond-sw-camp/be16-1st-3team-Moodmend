@@ -18,9 +18,9 @@ CREATE TABLE members (
 );
 
 CREATE TABLE emotion (
-  emotion_id BIGINT PRIMARY KEY AUTO_INCREMENT,
-  emotion_name VARCHAR(30) NOT NULL UNIQUE,
-  intensity TINYINT UNSIGNED NOT NULL
+  emotion_id bigint primary key auto_increment,
+  emotion_name varchar(30) not null,
+  intensity tinyint unsigned not null
 );
 
 CREATE TABLE contents (
@@ -119,8 +119,8 @@ CREATE TABLE download (
 
 CREATE TABLE payment (
   payment_id BIGINT NOT NULL AUTO_INCREMENT,
-  members_id BIGINT NULL,
-  items_id BIGINT NULL,
+  members_id BIGINT NOT NULL,
+  items_id BIGINT NULL,  -- ✅ 콘텐츠 결제를 위해 NULL 허용
   payment_method ENUM('신용카드','카카오페이','삼성페이','아이템') NOT NULL,
   payment_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   refund_date DATETIME,
@@ -133,15 +133,24 @@ CREATE TABLE payment (
 
 CREATE TABLE payment_detail (
   payment_detail_id BIGINT NOT NULL AUTO_INCREMENT,
-  contents_id BIGINT,
-  payment_id BIGINT NOT NULL,
-  items_id BIGINT,
-  purchase_type ENUM('콘텐츠 구매','아이템 구매') NOT NULL,
+  contents_id BIGINT NULL,    -- 콘텐츠 결제일 경우 사용
+  payment_id BIGINT NOT NULL, -- 필수
+  items_id BIGINT NULL,       -- 아이템 결제일 경우 사용
+  purchase_type ENUM('콘텐츠 구매', '아이템 구매') NOT NULL,
   price INT UNSIGNED NOT NULL,
+
   PRIMARY KEY (payment_detail_id),
+
   FOREIGN KEY (contents_id) REFERENCES contents(contents_id),
   FOREIGN KEY (payment_id) REFERENCES payment(payment_id),
-  FOREIGN KEY (items_id) REFERENCES items(items_id)
+  FOREIGN KEY (items_id) REFERENCES items(items_id),
+
+  -- 콘텐츠 또는 아이템 중 하나만 존재하도록 체크
+  CHECK (
+    (contents_id IS NOT NULL AND items_id IS NULL)
+    OR
+    (contents_id IS NULL AND items_id IS NOT NULL)
+  )
 );
 
 CREATE TABLE owned (
@@ -199,16 +208,24 @@ CREATE TABLE class_feedback (
 
 CREATE TABLE cart (
   cart_id BIGINT NOT NULL AUTO_INCREMENT,
-  contents_id BIGINT,
-  members_id BIGINT NOT NULL,
-  items_id BIGINT,
-  total INT UNSIGNED,
+  contents_id BIGINT,                 -- 콘텐츠 ID: NULL 가능
+  members_id BIGINT NOT NULL,         -- 회원 ID: 필수
+  items_id BIGINT,                    -- 아이템 ID: NULL 가능
+  total INT UNSIGNED NOT NULL DEFAULT 0,  -- 총합 금액: 반드시 존재
+  
   PRIMARY KEY (cart_id),
+  
   FOREIGN KEY (contents_id) REFERENCES contents(contents_id),
   FOREIGN KEY (members_id) REFERENCES members(members_id),
   FOREIGN KEY (items_id) REFERENCES items(items_id),
-  CHECK ((contents_id IS NOT NULL AND items_id IS NULL) OR (contents_id IS NULL AND items_id IS NOT NULL))
+
+  -- 콘텐츠와 아이템 중 하나만 선택 가능
+  CHECK (
+    (contents_id IS NOT NULL AND items_id IS NULL) OR 
+    (contents_id IS NULL AND items_id IS NOT NULL)
+  )
 );
+
 
 CREATE TABLE post (
   post_id BIGINT NOT NULL AUTO_INCREMENT,
@@ -241,7 +258,7 @@ CREATE TABLE playlist (
   title VARCHAR(20) NOT NULL,
   description TEXT,
   is_public BOOLEAN NOT NULL,
-  total_play_time TIME NOT NULL,
+  total_play_time TIME NOT NULL DEFAULT '00:00:00',
   playlist_share VARCHAR(255),
   FOREIGN KEY (members_id) REFERENCES members(members_id)
 );
