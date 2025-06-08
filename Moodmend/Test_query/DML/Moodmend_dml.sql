@@ -1313,6 +1313,8 @@ END$$
 DELIMITER ;
 
 
+DELIMITER $$
+
 CREATE PROCEDURE 성후_16_보유내역조회 (
     IN p_members_id BIGINT
 )
