@@ -42,7 +42,7 @@ Moodmend는 다음과 같은 핵심 목표를 중심으로 설계되었습니다
 
 | 도메인        | 관련 테이블 |
 |---------------|-------------|
-| 회원관리      | `members`, `friend`, `logout_log` |
+| 회원관리      | `members`, `friend` |
 | 콘텐츠        | `contents`, `likes`, `downloads`, `emotion`, `owned`, `payment_detail`, `reports` |
 | 구매          | `cart`, `payment`, `payment_detail`, `owned` |
 | 주문          | `payment`, `payment_detail` |
@@ -102,10 +102,10 @@ Moodmend는 다음과 같은 핵심 목표를 중심으로 설계되었습니다
 
 | 이름 | 역할 |
 |------|------|
-| 김지현 | (내용입력) |
-| 이승지 | (내용입력) |
-| 조민형 | (내용입력) |
-| 임성후 | (내용입력) |
+| 임성후 | `기획`, `요구사항서 작성`, `WBS 작성`, `ERD 설계`, `DDL 및 DML 작성`, `GitHub 배포`, `테스트`, `발표` |
+| 조민형 | `기획`, `요구사항서 작성`, `WBS 작성`, `ERD 설계`, `DDL 및 DML 작성`, `GitHub 배포`, `테스트` |
+| 김지현 | `기획`, `요구사항서 작성`, `WBS 작성`, `ERD 설계`, `DDL 및 DML 작성`, `GitHub 배포`, `테스트` |
+| 이승지 | `기획`, `요구사항서 작성`, `WBS 작성`, `ERD 설계`, `DDL 및 DML 작성`, `GitHub 배포`, `테스트` |
 
 <p align="center">
   <img src="./images/members/kimjihyun.jpg" width="120" />
