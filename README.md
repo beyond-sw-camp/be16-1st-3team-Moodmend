@@ -535,7 +535,7 @@ DELIMITER ;
 ```sql
 DELIMITER $$
 
-CREATE PROCEDURE 지현_01_플레이리스트_기능 (
+CREATE PROCEDURE 플레이리스트_기능 (
     IN p_action VARCHAR(20),
     IN p_members_id BIGINT,
     IN p_playlist_id BIGINT,
