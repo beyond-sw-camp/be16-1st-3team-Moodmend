@@ -69,8 +69,13 @@ Moodmend는 다음과 같은 핵심 목표를 중심으로 설계되었습니다
 
 - ✅ [요구사항 정의서](https://docs.google.com/spreadsheets/d/1lFGjxB9mXCP0s3Rz3rKsKB5AYQrcu9vMIBpgAjZERnI/edit#gid=1298947418)  
 - ✅ [WBS (Work Breakdown Structure)](https://docs.google.com/spreadsheets/d/1lFGjxB9mXCP0s3Rz3rKsKB5AYQrcu9vMIBpgAjZERnI/edit#gid=0)  
-- ✅ ERD 설계 이미지 보기 (링크 추가 예정)  
-- ✅ 테스트용 DML 쿼리 파일 다운로드 (링크 추가 예정)
+- ✅ [ERD 설계 이미지 보기](https://www.erdcloud.com/d/M7TAEEmzaw7qiSWE2)
+<br>
+<p align="center">
+  <img src="./Moodmend/images/ERD/ERD_Moodmend.png" width="2000" alt="Moodmend ERD"/>
+</p>
+
+- ✅ [테스트용 DML 쿼리 파일 다운로드](#)
 
 ---
 
