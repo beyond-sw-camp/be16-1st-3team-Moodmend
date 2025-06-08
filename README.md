@@ -76,6 +76,52 @@ Moodmend는 다음과 같은 핵심 목표를 중심으로 설계되었습니다
 </p>
 
 - ✅ [테스트용 DML 쿼리 파일 다운로드](#)
+---
+## 📄 프로시저 테스트 결과
+
+<details>
+<summary>▶️ 프로시저 테스트</summary>
+
+### 01. 회원가입 프로시저
+<p align="center">
+  <img src="./Moodmend/images/Test_Query/R001_회원가입.png" width="800" alt="회원가입 프로시저 테스트 결과"/>
+</p>
+
+```sql
+DELIMITER $$
+
+CREATE PROCEDURE 회원가입 (
+  IN p_name VARCHAR(20),
+  IN p_password VARCHAR(255),
+  IN p_phone_number VARCHAR(20),
+  IN p_nickname VARCHAR(20),
+  IN p_birthday DATE,
+  IN p_email VARCHAR(50),
+  IN p_role ENUM('Admin', 'Teacher', 'User'),
+  IN p_signup_type ENUM('Email', 'Kakao', 'Google', 'Naver')
+)
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM members 
+    WHERE phone_number = p_phone_number OR email = p_email
+  ) THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = '이미 등록된 이메일 또는 전화번호입니다.';
+  ELSE
+    INSERT INTO members (
+      name, password, phone_number, nickname, birthday, email,
+      role, signup_type, created_at, updated_at, point
+    )
+    VALUES (
+      p_name, p_password, p_phone_number, p_nickname, p_birthday, p_email,
+      p_role, p_signup_type, NOW(), NOW(), 0
+    );
+  END IF;
+END$$
+
+DELIMITER ;
+```
+</details>
 
 ---
 
