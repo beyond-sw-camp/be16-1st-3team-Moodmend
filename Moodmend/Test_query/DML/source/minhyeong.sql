@@ -259,7 +259,6 @@ END $$
 DELIMITER ;
 
 
-
 DELIMITER $$
 
 CREATE PROCEDURE 민형_09_클래스_조회()
