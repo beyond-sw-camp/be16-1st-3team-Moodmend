@@ -30,6 +30,7 @@ insert into playlist(members_id, title, description, is_public, total_play_time,
 -- #13. 최초가입 유저 100포인트 지급
 select * from point_reward;
 insert into point_reward (members_id, point_reward, reason) values (5, 100, '신규 유저');
+update members set point = 100 where members_id = 5;
 
 -- #14. 포인트 사용 및 지급 내역 조회
 
