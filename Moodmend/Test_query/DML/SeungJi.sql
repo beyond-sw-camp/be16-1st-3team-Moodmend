@@ -149,16 +149,31 @@ CREATE PROCEDURE 승지_06_게시판_등록 (
   IN p_members_id BIGINT,
   IN p_title VARCHAR(50),
   IN p_text TEXT,
-  IN p_category ENUM('고민','질문','좋은글','자유'),
+  IN p_category VARCHAR(10),
   IN p_is_anonymous BOOLEAN
 )
 BEGIN
   DECLARE v_avatar_id BIGINT;
 
-  -- 해당 멤버의 아바타 ID 조회
+  -- 카테고리 유효성 검사
+  IF p_category NOT IN ('고민', '질문', '좋은글', '자유') THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = '유효하지 않은 게시글 카테고리입니다.';
+  END IF;
+
+  -- 아바타 존재 확인
+  IF NOT EXISTS (
+    SELECT 1 FROM avatar WHERE members_id = p_members_id
+  ) THEN
+    SIGNAL SQLSTATE '45000'
+    SET MESSAGE_TEXT = '해당 멤버는 등록된 아바타가 없습니다.';
+  END IF;
+
+  -- 아바타 ID 조회
   SELECT avatar_id INTO v_avatar_id
   FROM avatar
-  WHERE members_id = p_members_id;
+  WHERE members_id = p_members_id
+  LIMIT 1;
 
   -- 게시글 등록
   INSERT INTO post (
@@ -166,8 +181,7 @@ BEGIN
   ) VALUES (
     p_members_id, v_avatar_id, p_title, p_text, p_category, p_is_anonymous, NOW(), NOW()
   );
-END;
-//
+END$$
 
 DELIMITER ;
 
