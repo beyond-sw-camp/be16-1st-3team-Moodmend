@@ -1015,12 +1015,24 @@ DELIMITER ;
 | 이승지 | `기획`, `요구사항서 작성`, `WBS 작성`, `ERD 설계`, `DDL 및 DML 작성`, `GitHub 배포`, `테스트`, `ReadMe` |
 | 김지현 | `기획`, `요구사항서 작성`, `WBS 작성`, `ERD 설계`, `DDL 및 DML 작성`, `GitHub 배포`, `테스트` |
 
-<p align="center">
-  <img src="./images/members/kimjihyun.jpg" width="120" />
-  <img src="./images/members/leesungji.jpg" width="120" />
-  <img src="./images/members/jominhyung.jpg" width="120" />
-  <img src="./images/members/limseonghoo.jpg" width="120" />
-</p>
+<div style="display: flex; justify-content: center; gap: 60px; flex-wrap: nowrap; overflow-x: auto;">
+  <div style="text-align: center;">
+    <img src="/Moodmend/images/Profile/임성후.png" width="80" />
+    <div>임성후</div>
+  </div>
+  <div style="text-align: center;">
+    <img src="/Moodmend/images/Profile/조민형.png" width="80" />
+    <div>조민형</div>
+  </div>
+  <div style="text-align: center;">
+    <img src="/Moodmend/images/Profile/이승지.png" width="80" />
+    <div>이승지</div>
+  </div>
+  <div style="text-align: center;">
+    <img src="/Moodmend/images/Profile/김지현.png" width="80" />
+    <div>김지현</div>
+  </div>
+</div>
 
 ---
 
