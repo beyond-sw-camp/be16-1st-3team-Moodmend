@@ -73,6 +73,8 @@
   <img src="./Moodmend/images/ERD/ERD_Moodmend.png" width="2000" alt="Moodmend ERD"/>
 </p>
 
+---
+
 ## ❓ ERD 설계 시 고민했던 사항들과 해결 방안
 
 ---
