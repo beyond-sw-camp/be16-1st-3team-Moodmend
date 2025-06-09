@@ -1008,31 +1008,55 @@ DELIMITER ;
 
 ## 👥 팀원 및 역할 분장  
 
-| 이름 | 역할 |
-|------|------|
-| 임성후 | `기획`, `요구사항서 작성`, `WBS 작성`, `ERD 설계`, `DDL 및 DML 작성`, `GitHub 배포`, `테스트`, `ReadMe`,  `발표` |
-| 조민형 | `기획`, `요구사항서 작성`, `WBS 작성`, `ERD 설계`, `DDL 및 DML 작성`, `GitHub 배포`, `테스트`, `ReadMe` |
-| 이승지 | `기획`, `요구사항서 작성`, `WBS 작성`, `ERD 설계`, `DDL 및 DML 작성`, `GitHub 배포`, `테스트`, `ReadMe` |
-| 김지현 | `기획`, `요구사항서 작성`, `WBS 작성`, `ERD 설계`, `DDL 및 DML 작성`, `GitHub 배포`, `테스트` |
+<table>
+  <tr>
+    <th>이름</th>
+    <th>역할</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="/Moodmend/images/Profile/임성후.png" width="80"/><br/>
+      임성후
+    </td>
+    <td>
+      <code>기획</code>, <code>요구사항서 작성</code>, <code>WBS 작성</code>, <code>ERD 설계</code>, <code>DDL 및 DML 작성</code>,  
+      <code>GitHub 배포</code>, <code>테스트</code>, <code>ReadMe</code>, <code>발표</code>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="/Moodmend/images/Profile/조민형.png" width="80"/><br/>
+      조민형
+    </td>
+    <td>
+      <code>기획</code>, <code>요구사항서 작성</code>, <code>WBS 작성</code>, <code>ERD 설계</code>, <code>DDL 및 DML 작성</code>,  
+      <code>GitHub 배포</code>, <code>테스트</code>, <code>ReadMe</code>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="/Moodmend/images/Profile/이승지.png" width="80"/><br/>
+      이승지
+    </td>
+    <td>
+      <code>기획</code>, <code>요구사항서 작성</code>, <code>WBS 작성</code>, <code>ERD 설계</code>, <code>DDL 및 DML 작성</code>,  
+      <code>GitHub 배포</code>, <code>테스트</code>, <code>ReadMe</code>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="/Moodmend/images/Profile/김지현.png" width="80"/><br/>
+      김지현
+    </td>
+    <td>
+      <code>기획</code>, <code>요구사항서 작성</code>, <code>WBS 작성</code>, <code>ERD 설계</code>, <code>DDL 및 DML 작성</code>,  
+      <code>GitHub 배포</code>, <code>테스트</code>
+    </td>
+  </tr>
+</table>
 
-<div style="display: flex; justify-content: center; gap: 60px; flex-wrap: nowrap; overflow-x: auto;">
-  <div style="text-align: center;">
-    <img src="/Moodmend/images/Profile/임성후.png" width="80" />
-    <div>임성후</div>
-  </div>
-  <div style="text-align: center;">
-    <img src="/Moodmend/images/Profile/조민형.png" width="80" />
-    <div>조민형</div>
-  </div>
-  <div style="text-align: center;">
-    <img src="/Moodmend/images/Profile/이승지.png" width="80" />
-    <div>이승지</div>
-  </div>
-  <div style="text-align: center;">
-    <img src="/Moodmend/images/Profile/김지현.png" width="80" />
-    <div>김지현</div>
-  </div>
-</div>
+
+
 
 ---
 
