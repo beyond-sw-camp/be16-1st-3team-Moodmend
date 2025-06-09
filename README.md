@@ -1048,7 +1048,9 @@ DELIMITER ;
   <tr>
     <td align="center">
       <img src="/Moodmend/images/Profile/임성후.png" width="80"/><br/>
-      임성후
+      <a href="https://github.com/dev-s3lim" target="_blank" style="text-decoration: none; color: inherit;">
+        임성후
+      </a>
     </td>
     <td>
       <code>기획</code>, <code>요구사항서 작성</code>, <code>WBS 작성</code>, <code>ERD 설계</code>, <code>DDL 및 DML 작성</code>,  
@@ -1058,7 +1060,9 @@ DELIMITER ;
   <tr>
     <td align="center">
       <img src="/Moodmend/images/Profile/조민형.png" width="80"/><br/>
-      조민형
+      <a href="https://github.com/jominhyeong97" target="_blank" style="text-decoration: none; color: inherit;">
+        조민형
+      </a>
     </td>
     <td>
       <code>기획</code>, <code>요구사항서 작성</code>, <code>WBS 작성</code>, <code>ERD 설계</code>, <code>DDL 및 DML 작성</code>,  
@@ -1068,7 +1072,9 @@ DELIMITER ;
   <tr>
     <td align="center">
       <img src="/Moodmend/images/Profile/이승지.png" width="80"/><br/>
-      이승지
+      <a href="https://github.com/SeungJi20" target="_blank" style="text-decoration: none; color: inherit;">
+        이승지
+      </a>
     </td>
     <td>
       <code>기획</code>, <code>요구사항서 작성</code>, <code>WBS 작성</code>, <code>ERD 설계</code>, <code>DDL 및 DML 작성</code>,  
@@ -1078,7 +1084,9 @@ DELIMITER ;
   <tr>
     <td align="center">
       <img src="/Moodmend/images/Profile/김지현.png" width="80"/><br/>
-      김지현
+      <a href="https://github.com/userkimjihyeon" target="_blank" style="text-decoration: none; color: inherit;">
+        김지현
+      </a>
     </td>
     <td>
       <code>기획</code>, <code>요구사항서 작성</code>, <code>WBS 작성</code>, <code>ERD 설계</code>, <code>DDL 및 DML 작성</code>,  
